@@ -1,5 +1,6 @@
 package internshipPlacementManagementSystem;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,10 +9,10 @@ import java.util.List;
  * Represents an internship opportunity created by a company representative
  * that students can apply for.
  */
-public class InternshipOpportunity {
+public class InternshipOpportunity implements Serializable{
     private static int nextOpportunityId = 2000;
     
-    private int opportunityId;
+    private String opportunityId;
     private String title;
     private String description;
     private InternshipLevel level;
@@ -29,13 +30,13 @@ public class InternshipOpportunity {
     private List<Application> applications;
     
     /**
-     * Constructor for creating a new internship opportunity
+     * Constructor for creating a new internship Listing
      */
     public InternshipOpportunity(String title, String description, InternshipLevel level,
                                String preferredMajor, LocalDate openingDate, LocalDate closingDate,
                                CompanyRepresentative companyRep, int totalSlots) {
         
-        this.opportunityId = nextOpportunityId++;
+        this.opportunityId = "";
         this.title = title;
         this.description = description;
         this.level = level;
@@ -53,7 +54,7 @@ public class InternshipOpportunity {
     }
     
     /**
-     * Career Center Staff approves the opportunity
+     * Career Center Staff approves the pending opportunity
      */
     public boolean approve(CareerCenterStaff staff) {
         if (this.status == InternshipStatus.PENDING) {
@@ -98,7 +99,7 @@ public class InternshipOpportunity {
     public boolean canApply() {
         LocalDate today = LocalDate.now();
         return status == InternshipStatus.APPROVED && 
-               status != InternshipStatus.FILLED &&
+               status != InternshipStatus.FIllED &&
                !today.isBefore(applicationOpeningDate) &&
                !today.isAfter(applicationClosingDate) &&
                isVisible &&
@@ -119,7 +120,7 @@ public class InternshipOpportunity {
         }
         
         // Check level eligibility based on year of study
-        int studentYear = student.getYearOfStudy();
+        int studentYear = student.getyearOfStudy();
         if (studentYear <= 2 && level != InternshipLevel.BASIC) {
             return false;
         }
@@ -151,7 +152,7 @@ public class InternshipOpportunity {
     public void confirmPlacement() {
         confirmedSlots++;
         if (confirmedSlots >= totalSlots) {
-            this.status = InternshipStatus.FILLED;
+            this.status = InternshipStatus.FIllED;
         }
     }
     
@@ -161,7 +162,7 @@ public class InternshipOpportunity {
     public void cancelPlacement() {
         if (confirmedSlots > 0) {
             confirmedSlots--;
-            if (this.status == InternshipStatus.FILLED) {
+            if (this.status == InternshipStatus.FIllED) {
                 this.status = InternshipStatus.APPROVED; // Reopen for applications
             }
         }
@@ -177,7 +178,7 @@ public class InternshipOpportunity {
     }
     
     /**
-     * Get number of available slots
+     * Get number of available slots at this position
      */
     public int getAvailableSlots() {
         return totalSlots - confirmedSlots;
@@ -192,7 +193,7 @@ public class InternshipOpportunity {
     }
     
     /**
-     * Update opportunity details (only before approval)
+     * Update InternshipOpportunity listing details (only before approval)
      */
     public boolean updateDetails(String title, String description, InternshipLevel level,
                                String preferredMajor, LocalDate openingDate, LocalDate closingDate,
@@ -214,7 +215,9 @@ public class InternshipOpportunity {
     }
     
     // Getters and Setters
-    public int getOpportunityId() { return opportunityId; }
+    public void setOpportunityId(int OpportunityId) {this.opportunityId = "INTERN" + OpportunityId;}
+    
+    public String getOpportunityId() { return opportunityId; }
     
     public String getTitle() { return title; }
     

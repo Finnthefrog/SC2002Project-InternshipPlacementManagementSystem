@@ -7,53 +7,37 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Main class for the Internship Placement Management System
- * Provides CLI interface for all user types
- */
-/**
- * @author finnt
- *
- */
 public class InternshipPlacementManagementSystem {
     
-    private Map<String, Student> students;
-    private Map<String, CompanyRepresentative> companyRepresentatives;
-    private Map<String, CareerCenterStaff> careerCenterStaff;
-    private List<InternshipOpportunity> internshipOpportunities;
+	private SystemState state;
     private List<Application> applications;
     private Scanner scanner;
     private User currentUser;
-    private Map<String, List<InternshipOpportunity>> userFilters;
     
-    // TXT File paths for data initialization, We can use CSV also but I am less familiar, my java File IO is lacking
     private static final String STUDENT_DATA_FILE = "students.txt";
-    private static final String STAFF_DATA_FILE = "staff.txt";
+    private static final String STAFF_DATA_FILE = "staffs.txt";
+    private static final String STATE_FILE_PATH = "data/system_state.dat";
     
     public InternshipPlacementManagementSystem() {
-        this.students = new HashMap<>();
-        this.companyRepresentatives = new HashMap<>();
-        this.careerCenterStaff = new HashMap<>();
-        this.internshipOpportunities = new ArrayList<>();
+    	this.state = SystemState.loadOrCreate(STATE_FILE_PATH);
         this.applications = new ArrayList<>();
         this.scanner = new Scanner(System.in);
-        this.userFilters = new HashMap<>();
         
-        // Initialize data from files
-        initializeData();
+        if (state.users.isEmpty() && state.students.isEmpty() && state.staff.isEmpty()) {
+            System.out.println("No dat file found. Initializing from .txt files...");
+            initializeData(); 
+            System.out.println("Initialization complete. Saving initial state...");
+            state.save(STATE_FILE_PATH); 
+        } else {
+            System.out.println("Loaded data from " + STATE_FILE_PATH);
+        }
     }
     
-    /**
-     * Main entry point of the system
-     */
     public static void main(String[] args) {
         InternshipPlacementManagementSystem system = new InternshipPlacementManagementSystem();
         system.run();
     }
     
-    /**
-     * Main system loop
-     */
     public void run() {
         System.out.println("=== Welcome to Internship Placement Management System ===");
         
@@ -66,9 +50,6 @@ public class InternshipPlacementManagementSystem {
         }
     }
     
-    /**
-     * Display main menu for non-authenticated users
-     */
     private void showMainMenu() {
         System.out.println("\n=== MAIN MENU ===");
         System.out.println("1. Login");
@@ -86,6 +67,7 @@ public class InternshipPlacementManagementSystem {
                 handleCompanyRepRegistration();
                 break;
             case 3:
+            	state.save(STATE_FILE_PATH);
                 System.out.println("Thank you for using the system. Goodbye!");
                 System.exit(0);
                 break;
@@ -94,32 +76,26 @@ public class InternshipPlacementManagementSystem {
         }
     }
     
-    /**
-     * Display user-specific menu based on user type
-     */
     private void showUserMenu() {
         System.out.println("\n=== Welcome, " + currentUser.getName() + " ===");
         
         if (currentUser instanceof Student) {
-            showStudentMenu();
+            showStudentMenu((Student) currentUser);
         } else if (currentUser instanceof CompanyRepresentative) {
-            showCompanyRepresentativeMenu();
+            showCompanyRepresentativeMenu((CompanyRepresentative) currentUser);
         } else if (currentUser instanceof CareerCenterStaff) {
-            showCareerCenterStaffMenu();
+            showCareerCenterStaffMenu((CareerCenterStaff) currentUser);
         }
     }
     
-    /**
-     * Handle user login
-     */
     private void handleLogin() {
-        System.out.print("Enter User ID: ");
-        String userId = scanner.nextLine().trim();
+        System.out.print("Enter Email: ");
+        String email = scanner.nextLine().strip();
         
         System.out.print("Enter Password: ");
         String password = scanner.nextLine();
         
-        User user = authenticateUser(userId, password);
+        User user = authenticateUser(email, password);
         
         if (user != null) {
             currentUser = user;
@@ -129,29 +105,24 @@ public class InternshipPlacementManagementSystem {
         }
     }
     
-    /**
-     * Authenticate user credentials
-     */
-    private User authenticateUser(String userId, String password) {
-        // Check students
-        if (students.containsKey(userId)) {
-            Student student = students.get(userId);
+    private User authenticateUser(String email, String password) {
+        if (state.students.containsKey(email)) {
+            Student student = state.students.get(email);
+            //System.out.println(student.getEmail()); #DEBUG
             if (student.getPassword().equals(password)) {
                 return student;
             }
         }
         
-        // Check company representatives (only if approved)
-        if (companyRepresentatives.containsKey(userId)) {
-            CompanyRepresentative companyRep = companyRepresentatives.get(userId);
-            if (companyRep.getPassword().equals(password) && companyRep.isApproved()) {
+        if (state.reps.containsKey(email)) {
+            CompanyRepresentative companyRep = state.reps.get(email);
+            if (companyRep.getPassword().equals(password) && companyRep.getAccountStatus().equals("Approved")) {
                 return companyRep;
             }
         }
         
-        // Check career center staff
-        if (careerCenterStaff.containsKey(userId)) {
-            CareerCenterStaff staff = careerCenterStaff.get(userId);
+        if (state.staff.containsKey(email)) {
+            CareerCenterStaff staff = state.staff.get(email);
             if (staff.getPassword().equals(password)) {
                 return staff;
             }
@@ -160,192 +131,74 @@ public class InternshipPlacementManagementSystem {
         return null;
     }
     
-    // ==================== STUDENT MENU ====================
-    
-    private void showStudentMenu() {
+    private void showStudentMenu(Student student) {
         System.out.println("\n=== STUDENT MENU ===");
-        System.out.println("1. View Available Internship Opportunities");
-        System.out.println("2. Apply for Internship");
-        System.out.println("3. View My Applications");
-        System.out.println("4. Accept Internship Placement");
-        System.out.println("5. Request Application Withdrawal");
-        System.out.println("6. Change Password");
-        System.out.println("7. Logout");
+        System.out.println("1. View & Apply Available Internship Opportunities");
+        System.out.println("2. View & Accepet or Withdrawl My Applications");
+        System.out.println("3. Change Password");
+        System.out.println("4. Logout");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
-        Student student = (Student) currentUser;
         
         switch (choice) {
-            case 1:
-                viewAvailableOpportunities(student);
-                break;
+	        case 1:
+	            student.viewInternshipOpportunities(state.internshipOpportunities, scanner, this.state); 
+	            break;
             case 2:
-                applyForInternship(student);
+            	student.viewAppliedInternships(scanner);
                 break;
             case 3:
-                viewMyApplications(student);
+            	changePassword(student); 
                 break;
             case 4:
-                acceptInternshipPlacement(student);
-                break;
-            case 5:
-                requestApplicationWithdrawal(student);
-                break;
-            case 6:
-                changePassword();
-                break;
-            case 7:
-                logout();
-                break;
+            	student.logout();
+            	this.currentUser = null;
+            	return;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
     }
     
-    private void viewAvailableOpportunities(Student student) {
-        List<InternshipOpportunity> availableOpportunities = internshipOpportunities.stream()
-                .filter(opp -> opp.isVisibleToStudent(student) && opp.canApply())
-                .collect(Collectors.toList());
-        
-        if (availableOpportunities.isEmpty()) {
-            System.out.println("No internship opportunities are currently available for you.");
-            return;
-        }
-        
-        // Apply any saved filters
-        availableOpportunities = applyFilters(availableOpportunities, student.getUserId());
-        
-        System.out.println("\n=== Available Internship Opportunities ===");
-        for (int i = 0; i < availableOpportunities.size(); i++) {
-            System.out.println((i + 1) + ". " + availableOpportunities.get(i).toString());
-        }
-        
-        System.out.println("\nOptions:");
-        System.out.println("1. View Details");
-        System.out.println("2. Apply Filters");
-        System.out.println("3. Clear Filters");
-        System.out.println("4. Back to Menu");
-        
-        int choice = getIntInput();
-        switch (choice) {
-            case 1:
-                viewOpportunityDetails(availableOpportunities);
-                break;
-            case 2:
-                applyOpportunityFilters(student.getUserId());
-                break;
-            case 3:
-                clearFilters(student.getUserId());
-                break;
-            case 4:
-                return;
-        }
-    }
-    
-    private void applyForInternship(Student student) {
-        // Check if student already has 3 applications
-        long activeApplications = applications.stream()
-                .filter(app -> app.getApplicant().equals(student))
-                .filter(app -> app.getStatus() == ApplicationStatus.PENDING || 
-                              app.getStatus() == ApplicationStatus.SUCCESSFUL)
-                .count();
-        
-        if (activeApplications >= 3) {
-            System.out.println("You have reached the maximum limit of 3 active applications.");
-            return;
-        }
-        
-        // Check if student has already accepted a placement
-        boolean hasAcceptedPlacement = applications.stream()
-                .filter(app -> app.getApplicant().equals(student))
-                .anyMatch(app -> app.isPlacementAccepted());
-        
-        if (hasAcceptedPlacement) {
-            System.out.println("You have already accepted an internship placement.");
-            return;
-        }
-        
-        List<InternshipOpportunity> availableOpportunities = internshipOpportunities.stream()
-                .filter(opp -> opp.isVisibleToStudent(student) && opp.canApply())
-                .collect(Collectors.toList());
-        
-        if (availableOpportunities.isEmpty()) {
-            System.out.println("No internship opportunities are available for application.");
-            return;
-        }
-        
-        System.out.println("\n=== Available Opportunities for Application ===");
-        for (int i = 0; i < availableOpportunities.size(); i++) {
-            System.out.println((i + 1) + ". " + availableOpportunities.get(i).toString());
-        }
-        
-        System.out.print("Select an opportunity to apply for (or 0 to cancel): ");
-        int choice = getIntInput();
-        
-        if (choice > 0 && choice <= availableOpportunities.size()) {
-            InternshipOpportunity selectedOpportunity = availableOpportunities.get(choice - 1);
-            
-            // Create and submit application
-            Application application = new Application(student, selectedOpportunity);
-            applications.add(application);
-            selectedOpportunity.addApplication(application);
-            
-            System.out.println("Application submitted successfully!");
-            System.out.println("Application ID: " + application.getApplicationId());
-        }
-    }
-    
-    // ==================== COMPANY REPRESENTATIVE MENU ====================
-    
-    private void showCompanyRepresentativeMenu() {
+    private void showCompanyRepresentativeMenu(CompanyRepresentative companyRep) {
         System.out.println("\n=== COMPANY REPRESENTATIVE MENU ===");
         System.out.println("1. Create Internship Opportunity");
-        System.out.println("2. View My Opportunities");
-        System.out.println("3. Edit Opportunity");
-        System.out.println("4. Toggle Opportunity Visibility");
-        System.out.println("5. View Applications");
-        System.out.println("6. Review Applications");
-        System.out.println("7. Change Password");
-        System.out.println("8. Logout");
+        System.out.println("2. View & Edit My Opportunities");
+        System.out.println("3. View & Manage Applications");
+        System.out.println("4. View All Internship Opportunities");
+        System.out.println("5. Change Password");
+        System.out.println("6. Logout");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
-        CompanyRepresentative companyRep = (CompanyRepresentative) currentUser;
         
         switch (choice) {
             case 1:
                 createInternshipOpportunity(companyRep);
                 break;
             case 2:
-                viewMyOpportunities(companyRep);
+                companyRep.viewCreatedInternships(scanner);
                 break;
             case 3:
-                editOpportunity(companyRep);
+            	companyRep.manageAllApplications(scanner);
                 break;
             case 4:
-                toggleOpportunityVisibility(companyRep);
+            	companyRep.viewInternshipOpportunities(state.internshipOpportunities,scanner);
                 break;
             case 5:
-                viewOpportunityApplications(companyRep);
+            	changePassword(companyRep);
                 break;
             case 6:
-                reviewApplications(companyRep);
-                break;
-            case 7:
-                changePassword();
-                break;
-            case 8:
-                logout();
-                break;
+            	companyRep.logout();
+            	this.currentUser = null;
+            	return;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
     }
     
     private void createInternshipOpportunity(CompanyRepresentative companyRep) {
-        // Check if company rep already has 5 opportunities
-        long existingOpportunities = internshipOpportunities.stream()
+        long existingOpportunities = state.internshipOpportunities.stream()
                 .filter(opp -> opp.getCompanyRepresentative().equals(companyRep))
                 .count();
         
@@ -362,7 +215,6 @@ public class InternshipPlacementManagementSystem {
         System.out.print("Enter description: ");
         String description = scanner.nextLine();
         
-        // Select internship level
         System.out.println("Select internship level:");
         System.out.println("1. BASIC");
         System.out.println("2. INTERMEDIATE");
@@ -379,78 +231,75 @@ public class InternshipPlacementManagementSystem {
                 level = InternshipLevel.BASIC;
         }
         
-        System.out.print("Enter preferred major (e.g., CSC, EEE, MAE): ");
+        System.out.print("Enter preferred major : ");
         String preferredMajor = scanner.nextLine().toUpperCase();
         
         LocalDate openingDate = getDateInput("Enter application opening date (YYYY-MM-DD): ");
-        LocalDate closingDate = getDateInput("Enter application closing date (YYYY-MM-DD): ");
-        
-        if (closingDate.isBefore(openingDate)) {
-            System.out.println("Closing date cannot be before opening date.");
-            return;
+        LocalDate closingDate;
+        while (true) {
+	        closingDate = getDateInput("Enter application closing date (YYYY-MM-DD): ");
+	        if (closingDate.isBefore(openingDate)) {
+	            System.out.println("Closing date cannot be before opening date.");
+	            continue;}
+	        break;
         }
         
         System.out.print("Enter number of slots (max 10): ");
         int slots = Math.min(getIntInput(), 10);
         
-        InternshipOpportunity opportunity = new InternshipOpportunity(
-            title, description, level, preferredMajor, 
-            openingDate, closingDate, companyRep, slots
-        );
-        
-        internshipOpportunities.add(opportunity);
-        
-        System.out.println("Internship opportunity created successfully!");
-        System.out.println("Opportunity ID: " + opportunity.getOpportunityId());
+        InternshipOpportunity newInternship;
+        newInternship = companyRep.createInternship(title, description, level, preferredMajor, 
+        	    openingDate, closingDate, companyRep, slots, this.state);
+        state.internshipOpportunities.add(newInternship);
+        System.out.println("Internship opportunity created ;successfully!");
+        System.out.println("Opportunity ID: " + newInternship.getOpportunityId());
         System.out.println("Status: PENDING (awaiting Career Center approval)");
     }
     
-    // ==================== CAREER CENTER STAFF MENU ====================
-    
-    private void showCareerCenterStaffMenu() {
+    private void showCareerCenterStaffMenu(CareerCenterStaff staff) {
         System.out.println("\n=== CAREER CENTER STAFF MENU ===");
-        System.out.println("1. Approve/Reject Company Representatives");
-        System.out.println("2. Approve/Reject Internship Opportunities");
+        System.out.println("1. Manage Company Representatives");
+        System.out.println("2. Manage Pending Internships");
         System.out.println("3. View All Opportunities");
-        System.out.println("4. Generate Reports");
+        System.out.println("4. Generate Internship Report"); // <-- MODIFIED
         System.out.println("5. Handle Withdrawal Requests");
         System.out.println("6. Change Password");
         System.out.println("7. Logout");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
-        CareerCenterStaff staff = (CareerCenterStaff) currentUser;
-        
+    
         switch (choice) {
             case 1:
                 manageCompanyRepresentatives(staff);
                 break;
             case 2:
-                manageInternshipOpportunities(staff);
+            	staff.managePendingInternships(state.internshipOpportunities,scanner);
                 break;
             case 3:
-                viewAllOpportunities();
+            	staff.viewInternshipOpportunities(state.internshipOpportunities,scanner);
                 break;
             case 4:
-                generateReports();
+                staff.generateInternshipReport(state.internshipOpportunities, scanner); // <-- MODIFIED
                 break;
             case 5:
-                handleWithdrawalRequests(staff);
+                staff.manageWithdrawalRequests(state.internshipOpportunities, scanner);
                 break;
             case 6:
-                changePassword();
+            	changePassword(staff);
                 break;
             case 7:
-                logout();
-                break;
+            	staff.logout();
+            	this.currentUser = null;
+            	return;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
     }
     
     private void manageCompanyRepresentatives(CareerCenterStaff staff) {
-        List<CompanyRepresentative> pendingReps = companyRepresentatives.values().stream()
-                .filter(rep -> !rep.isApproved() && rep.getStatus() == UserStatus.PENDING)
+        List<CompanyRepresentative> pendingReps = state.reps.values().stream()
+                .filter(rep -> !rep.getAccountStatus().equals("Approve") && rep.getAccountStatus().equals("Pending"))
                 .collect(Collectors.toList());
         
         if (pendingReps.isEmpty()) {
@@ -462,7 +311,7 @@ public class InternshipPlacementManagementSystem {
         for (int i = 0; i < pendingReps.size(); i++) {
             CompanyRepresentative rep = pendingReps.get(i);
             System.out.println((i + 1) + ". " + rep.getName() + 
-                             " (" + rep.getUserId() + ") - " + rep.getCompanyName());
+                             " (" + rep.getUserID() + ") - " + rep.getCompanyName());
         }
         
         System.out.print("Select a representative to review (or 0 to cancel): ");
@@ -473,7 +322,7 @@ public class InternshipPlacementManagementSystem {
             
             System.out.println("\n=== Representative Details ===");
             System.out.println("Name: " + selectedRep.getName());
-            System.out.println("Email: " + selectedRep.getUserId());
+            System.out.println("Email: " + selectedRep.getEmail());
             System.out.println("Company: " + selectedRep.getCompanyName());
             System.out.println("Department: " + selectedRep.getDepartment());
             System.out.println("Position: " + selectedRep.getPosition());
@@ -485,120 +334,100 @@ public class InternshipPlacementManagementSystem {
             int action = getIntInput();
             switch (action) {
                 case 1:
-                    selectedRep.approve();
+                    staff.approveCompanyRegistration(selectedRep);
                     System.out.println("Company representative approved successfully!");
                     break;
                 case 2:
-                    selectedRep.reject();
+                	staff.rejectCompanyRegistration(selectedRep);
                     System.out.println("Company representative rejected.");
                     break;
             }
         }
     }
     
-    // ==================== UTILITY METHODS ====================
-    
     private void handleCompanyRepRegistration() {
         System.out.println("\n=== Company Representative Registration ===");
         
-        System.out.print("Enter your company email address: ");
-        String email = scanner.nextLine().trim();
+        String email;
         
-        if (!isValidEmail(email)) {
-            System.out.println("Invalid email format.");
-            return;
+        while (true) {
+            System.out.print("Enter your company email address (or enter '3' to exit): ");
+            email = scanner.nextLine().trim();
+
+            if (email.equals("3")) {
+                return; 
+            }
+
+            if (!isValidEmail(email)) {
+                System.out.println("Invalid email format. Please try again.");
+                continue; 
+            }
+            if (state.reps.containsKey(email) || state.users.containsKey(email)) {
+                System.out.println("A representative with this email already exists. Please try again.");
+                continue; 
+            }
+            break; 
+        }
+        String name;
+        while (true) {
+            System.out.print("Enter your full name: ");
+            name = scanner.nextLine().trim(); 
+
+            if (name.isEmpty()) { 
+                System.out.println("Name cannot be empty. Please try again.");
+            } else {
+                break; 
+            }
         }
         
-        if (companyRepresentatives.containsKey(email)) {
-            System.out.println("A representative with this email already exists.");
-            return;
+        String companyName;
+        while (true) {
+        	System.out.print("Enter company name: ");
+            companyName = scanner.nextLine(); 
+
+            if (companyName.isEmpty()) { 
+                System.out.println("Name cannot be empty. Please try again.");
+            } else {
+                break; 
+            }
         }
         
-        System.out.print("Enter your full name: ");
-        String name = scanner.nextLine();
-        
-        System.out.print("Enter company name: ");
-        String companyName = scanner.nextLine();
-        
-        System.out.print("Enter department: ");
-        String department = scanner.nextLine();
-        
-        System.out.print("Enter your position: ");
-        String position = scanner.nextLine();
-        
-        CompanyRepresentative companyRep = new CompanyRepresentative(
-            email, name, "password", companyName, department, position
-        );
-        
-        companyRepresentatives.put(email, companyRep);
+        String department;
+        while (true) {
+        	System.out.print("Enter department: ");
+            department = scanner.nextLine(); 
+
+            if (department.isEmpty()) { 
+                System.out.println("Name cannot be empty. Please try again.");
+            } else {
+                break; 
+            }
+        }
+
+        String position;
+        while (true) {
+        	System.out.print("Enter your position: ");
+            position = scanner.nextLine();
+
+            if (position.isEmpty()) { 
+                System.out.println("Name cannot be empty. Please try again.");
+            } else {
+                break; 
+            }
+        }
+        CompanyRepresentative rep = new CompanyRepresentative(name,email, companyName, department, position);
+        rep.setCompanyreid(state.getComapnyrepid());
+        state.reps.put(email, rep);
         
         System.out.println("Registration submitted successfully!");
         System.out.println("Your account is pending approval from Career Center Staff.");
         System.out.println("You will be able to login once your account is approved.");
     }
     
-    private void initializeData() {
-        // Load students from file
-        loadStudentsFromFile();
-        // Load career center staff from file
-        loadStaffFromFile();
-        
-        System.out.println("Data initialization complete.");
-        System.out.println("Loaded " + students.size() + " students.");
-        System.out.println("Loaded " + careerCenterStaff.size() + " staff members.");
-    }
-    
-    private void loadStudentsFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(STUDENT_DATA_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 4) {
-                    String userId = parts[0].trim();
-                    String name = parts[1].trim();
-                    int yearOfStudy = Integer.parseInt(parts[2].trim());
-                    String major = parts[3].trim();
-                    
-                    Student student = new Student(userId, name, "password", yearOfStudy, major);
-                    students.put(userId, student);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Could not load student data file. Starting with empty student list.");
-            // Add some sample students for testing
-            addSampleStudents();
-        }
-    }
-    /** File I/O will require further revision */
-    private void loadStaffFromFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(STAFF_DATA_FILE))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 3) {
-                    String userId = parts[0].trim();
-                    String name = parts[1].trim();
-                    String department = parts[2].trim();
-                    
-                    CareerCenterStaff staff = new CareerCenterStaff(userId, name, "password", department);
-                    careerCenterStaff.put(userId, staff);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Could not load staff data file. Starting with empty staff list.");
-            // Add some sample staff for testing
-            addSampleStaff();
-        }
-    }
-    // Test methods
     private void addSampleStudents() {
-        students.put("U1234567A", new Student("U1234567A", "John Doe", "password", 3, "CSC"));
-        students.put("U2345678B", new Student("U2345678B", "Jane Smith", "password", 2, "EEE"));
-        students.put("U3456789C", new Student("U3456789C", "Bob Johnson", "password", 4, "MAE"));
-    }
-    
-    private void addSampleStaff() {
-        careerCenterStaff.put("staff001", new CareerCenterStaff("staff001", "Admin User", "password", "Career Services"));
+        state.students.put("U2345678B", new Student("U2345678B", "Jane Smith", "1234@gmail.com", 2, "EEE"));
+        state.students.put("1234", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
+        state.students.put("12345", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
     }
     
     private boolean isValidEmail(String email) {
@@ -629,7 +458,7 @@ public class InternshipPlacementManagementSystem {
         }
     }
     
-    private void changePassword() {
+    private void changePassword(User user) {
         System.out.print("Enter current password: ");
         String currentPassword = scanner.nextLine();
         
@@ -648,51 +477,79 @@ public class InternshipPlacementManagementSystem {
             System.out.println("Passwords do not match.");
             return;
         }
-        
-        currentUser.setPassword(newPassword);
+        user.changePassword(currentPassword,confirmPassword);
         System.out.println("Password changed successfully!");
     }
     
-    private void logout() {
-        System.out.println("Logging out...");
-        currentUser = null;
+    private void initializeData() {
+        loadStudentsFromFile();
+        loadStaffsFromFile();
+        System.out.println("Data loaded. " + (state.students.size()+ state.staff.size())+ " students in the system.");
     }
     
-    // Need to link this with given filters
-    private List<InternshipOpportunity> applyFilters(List<InternshipOpportunity> opportunities, String userId) {
-        // Implementation for applying saved filters
-        return opportunities; // Placeholder
-    }
-    
-    private void applyOpportunityFilters(String userId) {
-        // Implementation for setting filters
-        System.out.println("Filter functionality - to be implemented");
-    }
-    
-    private void clearFilters(String userId) {
-        userFilters.remove(userId);
-        System.out.println("Filters cleared.");
-    }
-    
-    private void viewOpportunityDetails(List<InternshipOpportunity> opportunities) {
-        System.out.print("Enter opportunity number to view details: ");
-        int choice = getIntInput();
+    private void loadStudentsFromFile() {
+        InputStream is = getClass().getResourceAsStream(STUDENT_DATA_FILE);
+
+        if (is == null) {
+            System.out.println("Could not find " + STUDENT_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
+            return; 
+        }
         
-        if (choice > 0 && choice <= opportunities.size()) {
-            System.out.println(opportunities.get(choice - 1).getDetailedInfo());
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    String userId = parts[0].trim();
+                    String name = parts[1].trim();
+                    String major = parts[2].trim();
+                    int yearOfStudy = Integer.parseInt(parts[3].trim());
+                    String email = parts[4].trim();
+                 
+                    Student student = new Student(userId, name, email, yearOfStudy, major);
+                    state.students.put(email, student);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading " + STUDENT_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing number in " + STUDENT_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
         }
     }
     
-    // Stuff i'll do after seeing personclasses 
-    private void viewMyApplications(Student student) { /* Implementation */ }
-    private void acceptInternshipPlacement(Student student) { /* Implementation */ }
-    private void requestApplicationWithdrawal(Student student) { /* Implementation */ }
-    private void viewMyOpportunities(CompanyRepresentative companyRep) { /* Implementation */ }
-    private void editOpportunity(CompanyRepresentative companyRep) { /* Implementation */ }
-    private void toggleOpportunityVisibility(CompanyRepresentative companyRep) { /* Implementation */ }
-    private void viewOpportunityApplications(CompanyRepresentative companyRep) { /* Implementation */ }
-    //private void reviewApplications(CompanyRepresentative companyRep) { /* Implementation */ }
-    private void manageInternshipOpportunities(CareerCenterStaff staff) { /* Implementation */ }
-    private void viewAllOpportunities() { /* Link w sysstate */ } 
-    private void handleWithdrawalRequests(CareerCenterStaff staff) { /* Implementation */ }
+    private void loadStaffsFromFile() {
+        InputStream is = getClass().getResourceAsStream(STAFF_DATA_FILE);
+
+        if (is == null) {
+            System.out.println("Could not find " + STAFF_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
+            return; 
+        }
+        
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length >= 4) {
+                    String userId = parts[0].trim();
+                    String name = parts[1].trim();
+                    String role = parts[2].trim();
+                    String department = parts[3].trim();
+                    String email = parts[4].trim();
+                 
+                    CareerCenterStaff staff = new CareerCenterStaff(userId, name, email, role, department);
+                    state.staff.put(email, staff);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading " + STUDENT_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
+        } catch (NumberFormatException e) {
+            System.out.println("Error parsing number in " + STUDENT_DATA_FILE + ". Starting with empty student list.");
+            addSampleStudents();
+        }
+    }
 }

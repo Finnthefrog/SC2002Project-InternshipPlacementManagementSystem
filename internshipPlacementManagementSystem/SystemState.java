@@ -4,18 +4,20 @@ import java.util.*;
 
 public class SystemState implements Serializable {
     private static final long serialVersionUID = 1L;
-
+    public int curOpportunityId = 001;
+    public int curApplicationId = 001;
+    public int curCompanyrepId = 001;
     public Map<String, User> users = new HashMap<>();
     public Map<String, Student> students = new HashMap<>();
-    public Map<String, CompanyRep> reps = new HashMap<>();
+    public Map<String, CompanyRepresentative> reps = new HashMap<>();
     public Map<String, CareerCenterStaff> staff = new HashMap<>();
 
-    public Map<String, Internship> internships = new HashMap<>();
-    public Map<String, Application> applications = new HashMap<>();
     public Map<String, WithdrawalRequest> withdrawals = new HashMap<>();
-
+    public List<InternshipOpportunity> internshipOpportunities = new ArrayList<>();
+    public List<Application> applications = new ArrayList<>();
     public Map<String, FilterSettings> userFilters = new HashMap<>();
-
+    
+    
     public int nextIntSeq = 1;
     public int nextAppSeq = 1;
     public int nextWrSeq = 1;
@@ -40,7 +42,9 @@ public class SystemState implements Serializable {
             System.out.println("[Warn] Failed to save state: " + e.getMessage());
         }
     }
-
+    public int getCurOpID() {return this.curOpportunityId++;}
+    public int getComapnyrepid() {return this.curCompanyrepId++;}
+    public int getCurappid() {return this.curApplicationId++;}
     public String nextInternshipId() { return String.format("INT-%05d", nextIntSeq++); }
     public String nextApplicationId() { return String.format("APP-%05d", nextAppSeq++); }
     public String nextWithdrawalId() { return String.format("WR-%05d", nextWrSeq++); }

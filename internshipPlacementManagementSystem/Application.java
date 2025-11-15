@@ -4,10 +4,10 @@ import java.io.*;
 import java.time.LocalDate;
 
 
-public class Application {
+public class Application implements Serializable{
     private static int nextApplicationId = 1000;
     
-    private int applicationId;
+    private String applicationId;
     private Student applicant;
     private InternshipOpportunity opportunity;
     private ApplicationStatus status;
@@ -21,7 +21,7 @@ public class Application {
      * Constructor for creating a new application
      */
     public Application(Student applicant, InternshipOpportunity opportunity) {
-        this.applicationId = nextApplicationId++;
+        this.applicationId = "";
         this.applicant = applicant;
         this.opportunity = opportunity;
         this.status = ApplicationStatus.PENDING;
@@ -84,11 +84,13 @@ public class Application {
      */
     public boolean requestWithdrawal(String reason) {
         if (this.status == ApplicationStatus.PENDING || 
-            (this.status == ApplicationStatus.SUCCESSFUL && this.placementAccepted)) {
+            (this.status == ApplicationStatus.SUCCESSFUL)) {
             this.withdrawalReason = reason;
+            this.status = ApplicationStatus.WITHDRAWL_PENDING;
+            System.out.println("Successfully Submitting");
             // This would trigger a request to Career Center Staff for approval
             return true;
-        }
+        } else { System.out.println("You Are Not Allowed To Withdraw This Application");}
         return false;
     }
     
@@ -104,11 +106,15 @@ public class Application {
         }
     }
     
+    public void rejectWithdrawal(CareerCenterStaff staff) {
+        this.status = ApplicationStatus.REJECT_WITHDRAWN;
+        this.statusUpdateDate = LocalDate.now();
+    }
     /**
      * Check if student is eligible for this internship level
      */
     public boolean isEligibleForLevel() {
-        int studentYear = applicant.getYearOfStudy();
+        int studentYear = applicant.getyearOfStudy();
         InternshipLevel opportunityLevel = opportunity.getLevel();
         
         // Year 1-2 can only apply for Basic level
@@ -127,7 +133,9 @@ public class Application {
     }
     
     // Getters and Setters
-    public int getApplicationId() { return applicationId; }
+    public void setApplicationId(int applicationId) {this.applicationId = "APP" + applicationId;}
+    
+    public String getApplicationId() { return applicationId; }
     
     public Student getApplicant() { return applicant; }
     

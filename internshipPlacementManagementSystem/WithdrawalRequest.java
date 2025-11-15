@@ -18,7 +18,7 @@ public class WithdrawalRequest implements Serializable{
 	}
 	
 	public String getId() {return id;}
-	public String getApplicationId() {return ApplicationId;}
+	public String getApplicationId() {return applicationId;}
 	public WithdrawalStatus getStatus() {return status;}
 	public void setStatus(WithdrawalStatus status) {this.status = status;}
 	public boolean isAfterConfirmation() {return afterConfirmation;}
