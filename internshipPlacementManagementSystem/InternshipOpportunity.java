@@ -46,7 +46,11 @@ public class InternshipOpportunity implements Serializable{
         this.status = InternshipStatus.PENDING;
         this.companyName = companyRep.getCompanyName();
         this.companyRepresentative = companyRep;
+<<<<<<< HEAD
         this.totalSlots = totalSlots; // Max 10 slots as per requirements
+=======
+        this.totalSlots = Math.min(totalSlots, 10); // Max 10 slots as per requirements
+>>>>>>> ziyanwork/origin
         this.confirmedSlots = 0;
         this.isVisible = true; // Default to visible
         this.creationDate = LocalDate.now();
@@ -54,7 +58,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Career Center Staff approves the pending opportunity
+=======
+     * CareerCenter Staff approves the pending opportunity
+>>>>>>> ziyanwork/origin
      */
     public boolean approve(CareerCenterStaff staff) {
         if (this.status == InternshipStatus.PENDING) {
@@ -65,7 +73,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Career Center Staff rejects the opportunity
+=======
+     * CareerCenter Staff rejects the opportunity
+>>>>>>> ziyanwork/origin
      */
     public boolean reject(CareerCenterStaff staff, String reason) {
         if (this.status == InternshipStatus.PENDING) {
@@ -77,7 +89,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Toggle visibility of the opportunity
+=======
+     * Method to toggle visibility of the opportunity
+>>>>>>> ziyanwork/origin
      */
     public void toggleVisibility(CompanyRepresentative companyRep) {
         if (this.companyRepresentative.equals(companyRep)) {
@@ -94,7 +110,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Check if students can apply for this opportunity
+=======
+     * Method to Check if students can apply for this opportunity
+>>>>>>> ziyanwork/origin
      */
     public boolean canApply() {
         LocalDate today = LocalDate.now();
@@ -107,7 +127,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Check if opportunity is visible to students based on their profile
+=======
+     * Method to check if opportunity is visible to students based on their profile
+>>>>>>> ziyanwork/origin
      */
     public boolean isVisibleToStudent(Student student) {
         if (!isVisible || status != InternshipStatus.APPROVED) {
@@ -129,7 +153,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Add an application to this opportunity
+=======
+     * Method to an application to this opportunity
+>>>>>>> ziyanwork/origin
      */
     public boolean addApplication(Application application) {
         if (canApply()) {
@@ -140,7 +168,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Remove an application from this opportunity
+=======
+     * Method to remove an application from this opportunity
+>>>>>>> ziyanwork/origin
      */
     public boolean removeApplication(Application application) {
         return applications.remove(application);
@@ -210,7 +242,11 @@ public class InternshipOpportunity implements Serializable{
         this.preferredMajor = preferredMajor;
         this.applicationOpeningDate = openingDate;
         this.applicationClosingDate = closingDate;
+<<<<<<< HEAD
         this.totalSlots = totalSlots;
+=======
+        this.totalSlots = Math.min(totalSlots, 10);
+>>>>>>> ziyanwork/origin
         return true;
     }
     
@@ -259,7 +295,11 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
+<<<<<<< HEAD
      * Get detailed information for display
+=======
+     * Print detailed information of the Internship Listing for display
+>>>>>>> ziyanwork/origin
      */
     public String getDetailedInfo() {
         StringBuilder sb = new StringBuilder();

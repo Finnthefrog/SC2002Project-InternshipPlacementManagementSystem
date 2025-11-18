@@ -11,6 +11,11 @@ import java.time.format.DateTimeParseException;
 import java.util.HashSet; 
 import internshipPlacementManagementSystem.InternshipLevel; 
 import internshipPlacementManagementSystem.ApplicationStatus; 
+/**
+ * Student User applying to and being placed into Internships
+ * This class can Apply to internships, monitor their applications and their status, and if needed withdraw
+ * applications they have previously made
+ */
 
 public class Student extends User implements Serializable {
 	
@@ -18,7 +23,18 @@ public class Student extends User implements Serializable {
     private String major;    
     private List<Application> appliedInternships; 
     private FilterSettings filterSettings;
+<<<<<<< HEAD
     
+=======
+    /**
+     * Constructor for the student class 
+     * @param userID Student Identification Number for this user
+     * @param name Name of the student 
+     * @param email Email of the student for login 
+     * @param yearOfStudy Year cohort of the student
+     * @param major Degree of study 
+     */
+>>>>>>> ziyanwork/origin
     public Student(String userID, String name,String email, int yearOfStudy, String major) {
         super(userID, name, email); 
         this.yearOfStudy = yearOfStudy;
@@ -26,7 +42,15 @@ public class Student extends User implements Serializable {
         this.appliedInternships = new ArrayList<>();
         this.filterSettings = new FilterSettings();
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle UI for printing a list of all internship listings in the system 
+     * Can choose to filter for Required experience level, desired major, Company or Application timeframe
+     * @param allInternships This is the List of all internships taken stream
+     */
+>>>>>>> ziyanwork/origin
     public void viewInternshipOpportunities(List<InternshipOpportunity> allInternships, Scanner scanner, SystemState state) {
         int page = 1;
         final int pageSize = 5;
@@ -119,7 +143,17 @@ public class Student extends User implements Serializable {
             } 
         } 
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method to allow the student to create an internship for application
+ * Student applies to an opportunity made a companyrep, which is then 
+ * @param internship  
+ * @param state
+ * @return
+ */
+>>>>>>> ziyanwork/origin
     public boolean applyForInternship(InternshipOpportunity internship, SystemState state) { 
         for (Application app : appliedInternships) {
             if (app.getOpportunity().equals(internship)) {
@@ -267,7 +301,17 @@ public class Student extends User implements Serializable {
             }
         } 
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method for Student to confirm Placement at internship once CompanyRep has approved
+ * withdraws student from other internships that have been applied to 
+ * @param successfulApplication The Internship Application that is being confirmed
+ * @param reason Reason for Withdrawal of all other applied to internships
+ * @return True if Successful application and withdrawal from other internships  
+ */
+>>>>>>> ziyanwork/origin
     public boolean acceptInternship(Application successfulApplication,String reason) {
         System.out.println("--- Accepting Internship Offer ---");
         
@@ -290,7 +334,17 @@ public class Student extends User implements Serializable {
         }
         return true;
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method to submit a withdrawal-application to careerCenter staff
+ * A reason must be given for CareerCentre staff to overview and approve the request 
+ * @param application The ID of the appliation to be withdrawn
+ * @param reason Reason for withdrawal
+ * @return True if request submitted
+ */
+>>>>>>> ziyanwork/origin
     public boolean requestWithdrawal(Application application, String reason) {
         System.out.println("Submitting withdrawal request for (" + application.getStatus() + ") " + application.getOpportunity().getTitle() + "...");
         application.requestWithdrawal(reason);
@@ -300,12 +354,25 @@ public class Student extends User implements Serializable {
     public FilterSettings getFilterSettings() {
         return this.filterSettings;
     }
+<<<<<<< HEAD
     
+=======
+    /**
+     * Remove filters currently in place on viewing
+     */
+>>>>>>> ziyanwork/origin
     public void clearFilters() {
         this.filterSettings = new FilterSettings();
         System.out.println("All filters have been cleared.");
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle the filtering of {@link viewInternshipOpportunities} by 
+     * experience level, desired major, Company or Application timeframe 
+     */
+>>>>>>> ziyanwork/origin
     public void applyOpportunityFilters(Scanner scanner) {
         boolean back = false;
         while (!back) {
@@ -331,7 +398,13 @@ public class Student extends User implements Serializable {
             }
         }
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method to handle settings for filtering by experience Level
+ */
+>>>>>>> ziyanwork/origin
     private void applyLevelFilter(Scanner scanner) {
         System.out.println("Add filter by Level (1: Basic, 2: Intermediate, 3: Advanced, 0: Clear Level Filter):");
         String choice = scanner.nextLine();
@@ -343,7 +416,13 @@ public class Student extends User implements Serializable {
             default: System.out.println("Invalid choice.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle settings for filtering by Major
+     */
+>>>>>>> ziyanwork/origin
     private void applyMajorFilter(Scanner scanner) {
         System.out.print("Enter Major to filter by (e.g., Computer Science) or '0' to clear: ");
         String major = scanner.nextLine().toUpperCase();
@@ -355,7 +434,13 @@ public class Student extends User implements Serializable {
             System.out.println("Added '" + major + "' to major filter.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle settings for filtering by Company
+     */
+>>>>>>> ziyanwork/origin
     private void applyCompanyFilter(Scanner scanner) {
         System.out.print("Enter Company Name to filter by or '0' to clear: ");
         String company = scanner.nextLine();
@@ -367,7 +452,13 @@ public class Student extends User implements Serializable {
             System.out.println("Added '" + company + "' to company filter.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle settings for filtering by timeframe
+     */
+>>>>>>> ziyanwork/origin
     private void applyDateFilter(Scanner scanner, boolean isStartDate) {
         String prompt = isStartDate ? "Enter 'Opening From' Date (YYYY-MM-DD) or '0' to clear:" : "Enter 'Closing Before' Date (YYYY-MM-DD) or '0' to clear:";
         System.out.print(prompt + " ");

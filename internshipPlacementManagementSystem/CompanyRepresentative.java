@@ -9,7 +9,12 @@ import java.util.Set;
 import java.time.format.DateTimeParseException;
 import internshipPlacementManagementSystem.InternshipLevel;
 import internshipPlacementManagementSystem.ApplicationStatus; 
-
+/**
+ * Class to represent the representive of companies hosting internships in the system
+ * Can be registered into system with careerCentre approval, can create,edit and remove internship opportunity listings
+ * while pending approval from careerCentre staff.  
+ *
+ */
 public class CompanyRepresentative extends User implements Serializable {
 	
     private static int nextId = 1001;
@@ -19,7 +24,14 @@ public class CompanyRepresentative extends User implements Serializable {
     private String accountStatus; 
     private List<InternshipOpportunity> createdOpportunities; 
     private FilterSettings filterSettings; 
-
+/**
+ * Constructor for the CompanyRep
+ * @param name Name of the representitive
+ * @param email Email of the Rep for login and identification
+ * @param companyName Name of the company hosting the internship
+ * @param department Part of company the rep belongs to 
+ * @param position The title of the representitive in the company
+ */
     public CompanyRepresentative( String name,String email,  
             String companyName, String department, String position) {
 			super("", name, email); 
@@ -30,13 +42,31 @@ public class CompanyRepresentative extends User implements Serializable {
 			this.createdOpportunities = new ArrayList<>(); 
 			this.filterSettings = new FilterSettings();
 	}
+<<<<<<< HEAD
 
+=======
+/**
+ * Creates a new Internship listing for the students to apply to
+ * 
+ * @param title
+ * @param description
+ * @param level
+ * @param preferredMajor
+ * @param openingDate
+ * @param closingDate
+ * @param companyRep
+ * @param totalSlots
+ * @param state
+ * @return
+ */
+>>>>>>> ziyanwork/origin
     public InternshipOpportunity createInternship(String title, String description, InternshipLevel level,
             String preferredMajor, LocalDate openingDate, LocalDate closingDate,
             CompanyRepresentative companyRep, int totalSlots, SystemState state) {
         System.out.println("--- Creating New Internship ---");
         if (this.createdOpportunities != null && this.createdOpportunities.size() >= 5) {
             System.out.println("Error: You have reached the maximum limit of 5 created opportunities.");
+<<<<<<< HEAD
             return null; 
         }
 
@@ -51,6 +81,14 @@ public class CompanyRepresentative extends User implements Serializable {
                 System.out.println("Invalid input. Please enter a valid number.");
                 totalSlots = 999; 
             }
+=======
+            return null; // finn-can we have a defined error for this instead of null
+        }
+
+        if (totalSlots > 10) {
+            System.out.println("Error: Maximum of 10 slots allowed. Setting to 10.");
+            totalSlots = 10;
+>>>>>>> ziyanwork/origin
         }
         
         InternshipOpportunity newInternship = new InternshipOpportunity(title, description, level, preferredMajor, openingDate,closingDate, this,totalSlots);
@@ -59,7 +97,13 @@ public class CompanyRepresentative extends User implements Serializable {
         System.out.println("Successfully created internship: " + title + ". It is now 'Pending' staff approval.");
         return newInternship;
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method to show the Internships created by this Rep
+ */
+>>>>>>> ziyanwork/origin
     public void viewCreatedInternships(Scanner scanner) {
         boolean keepViewing = true;
         
@@ -127,7 +171,16 @@ public class CompanyRepresentative extends User implements Serializable {
             }
         } 
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method that allows the rep to set the listing as available for Students to apply
+ * @param internship The internship that is being shown/hidden
+ * @param isVisible The boolean that decides visibility
+ * @return true if the internship is changed successfully
+ */
+>>>>>>> ziyanwork/origin
     public boolean toggleInternshipVisibility(InternshipOpportunity internship, boolean isVisible) {
         if (!internship.getCompanyRepresentative().equals(this)) {
             System.out.println("Error: You can only edit your own internships.");
@@ -143,7 +196,13 @@ public class CompanyRepresentative extends User implements Serializable {
         System.out.println(internship.getTitle() + " visibility set to: " + isVisible);
         return true;
     }
+<<<<<<< HEAD
     
+=======
+    /**
+     * Method to handle the student's applications for Open Internship Opportunities 
+     */
+>>>>>>> ziyanwork/origin
     public void manageAllApplications(Scanner scanner) {
         boolean keepViewing = true;
 
@@ -216,7 +275,14 @@ public class CompanyRepresentative extends User implements Serializable {
             }
         } 
     }
+<<<<<<< HEAD
     
+=======
+    /**
+     * Method to print all applications for a specific internship listing 
+     * @param internship Internship whose applications are being viewed
+     */
+>>>>>>> ziyanwork/origin
     public void viewApplications(InternshipOpportunity internship, Scanner scanner) {
         boolean keepViewing = true;
 
@@ -285,7 +351,15 @@ public class CompanyRepresentative extends User implements Serializable {
             }
         } 
     }
+<<<<<<< HEAD
 
+=======
+/**
+ * Method to allow the CompanyRep to approve a student's internship Application
+ * @param application The specific student's application that is being accepted
+ * @return True if application is approved by the Company rep
+ */
+>>>>>>> ziyanwork/origin
     public boolean approveApplication(Application application) {
         if (application.getStatus() != ApplicationStatus.PENDING) {
             System.out.println("Error: Can only approve 'Pending' applications.");
@@ -295,7 +369,15 @@ public class CompanyRepresentative extends User implements Serializable {
         System.out.println("Application for " + application.getApplicant().getName() + " set to 'Successful'.");
         return true;
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to allow the CompanyRep to disprove a student's internship Application
+     * @param application The specific student's application that is being denied
+     * @return True if application is successfully denied by the Company rep
+     */ 
+>>>>>>> ziyanwork/origin
     public boolean rejectApplication(Application application,String reason) {
         if (application.getStatus() != ApplicationStatus.PENDING) {
             System.out.println("Error: Can only reject 'Pending' applications.");
@@ -305,7 +387,15 @@ public class CompanyRepresentative extends User implements Serializable {
         System.out.println("Application for " + application.getApplicant().getName() + " set to 'Unsuccessful'.");
         return true;
     }
+<<<<<<< HEAD
     
+=======
+    /**
+     * Method to handle UI for printing a list of all internship listings in the system 
+     * Can choose to filter for Required experience level, desired major, Company or Application timeframe
+     * @param allInternships This is the List of all internships taken stream
+     */
+>>>>>>> ziyanwork/origin
     public void viewInternshipOpportunities(List<InternshipOpportunity> allInternships, Scanner scanner) {
         int page = 1;
         final int pageSize = 5;
@@ -415,7 +505,14 @@ public class CompanyRepresentative extends User implements Serializable {
         this.filterSettings = new FilterSettings();
         System.out.println("All filters have been cleared.");
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * Method to handle the filtering of {@link viewInternshipOpportunities} by 
+     * experience level, desired major, Company or Application timeframe 
+     */
+>>>>>>> ziyanwork/origin
     public void applyOpportunityFilters(Scanner scanner) {
         boolean back = false;
         while (!back) {
@@ -443,7 +540,13 @@ public class CompanyRepresentative extends User implements Serializable {
             }
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Level
+     */
+>>>>>>> ziyanwork/origin
     private void applyLevelFilter(Scanner scanner) {
         System.out.println("Add filter by Level (1: Basic, 2: Intermediate, 3: Advanced, 0: Clear Level Filter):");
         String choice = scanner.nextLine();
@@ -455,7 +558,13 @@ public class CompanyRepresentative extends User implements Serializable {
             default: System.out.println("Invalid choice.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Major
+     */
+>>>>>>> ziyanwork/origin
     private void applyMajorFilter(Scanner scanner) {
         System.out.print("Enter Major to filter by (e.g., Computer Science) or '0' to clear: ");
         String major = scanner.nextLine().toUpperCase();
@@ -467,7 +576,13 @@ public class CompanyRepresentative extends User implements Serializable {
             System.out.println("Added '" + major + "' to major filter.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Company
+     */
+>>>>>>> ziyanwork/origin
     private void applyCompanyFilter(Scanner scanner) {
         System.out.print("Enter Company Name to filter by or '0' to clear: ");
         String company = scanner.nextLine();
@@ -479,7 +594,13 @@ public class CompanyRepresentative extends User implements Serializable {
             System.out.println("Added '" + company + "' to company filter.");
         }
     }
+<<<<<<< HEAD
 
+=======
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Timeframe
+     */
+>>>>>>> ziyanwork/origin
     private void applyDateFilter(Scanner scanner, boolean isStartDate) {
         String prompt = isStartDate ? "Enter 'Opening From' Date (YYYY-MM-DD) or '0' to clear:" 
                                     : "Enter 'Closing Before' Date (YYYY-MM-DD) or '0' to clear:";
