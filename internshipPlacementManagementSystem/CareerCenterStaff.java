@@ -10,20 +10,35 @@ import java.util.Set;
 import java.time.LocalDate; 
 import java.time.format.DateTimeParseException;
 import java.io.*;
-
+/**
+ * Staff responsible for overseeing the CareerCentre Processes 
+ * Can Approve the registration of new CompanyReps or Internship Positions,
+ * deal with 
+ */
 public class CareerCenterStaff extends User implements Serializable{
     
     private String staffDepartment;
     private FilterSettings filterSettings; 
     private String role;
-    
+    /**
+     * Constructor for the CareerCenterStaff object
+     * @param userID Designated Identification Number of this staff member
+     * @param name The name of this given staff folder
+     * @param email Staff email for login 
+     * @param role Position of the staff the Career centre 
+     * @param staffDepartment The department of the Career centre system of this user
+     */
     public CareerCenterStaff(String userID,String name,String email ,String role, String staffDepartment) {
     	super(userID, name, email); 
         this.staffDepartment = staffDepartment;
         this.role = role;
         this.filterSettings = new FilterSettings();
     }
-
+/**
+ * Method to handle UI for printing a list of all internship listings in the system 
+ * Can choose to filter for Required experience level, desired major, Company or Application timeframe
+ * @param allInternships This is the List of all internships taken stream
+ */
     public void viewInternshipOpportunities(List<InternshipOpportunity> allInternships, Scanner scanner) {
         int page = 1;
         final int pageSize = 5;
@@ -134,7 +149,10 @@ public class CareerCenterStaff extends User implements Serializable{
         this.filterSettings = new FilterSettings();
         System.out.println("All filters have been cleared.");
     }
-
+/**
+ * Method to handle the filtering of {@link viewInternshipOpportunities} by 
+ * experience level, desired major, Company or Application timeframe 
+ */
     public void applyOpportunityFilters(Scanner scanner) {
         boolean back = false;
         while (!back) {
@@ -162,7 +180,9 @@ public class CareerCenterStaff extends User implements Serializable{
             }
         }
     }
-
+/**
+ * subMethod of {@link applyOpportunityFilter} that handles filtering by Level
+ */
     private void applyLevelFilter(Scanner scanner) {
         System.out.println("Add filter by Level (1: Basic, 2: Intermediate, 3: Advanced, 0: Clear Level Filter):");
         String choice = scanner.nextLine();
@@ -174,7 +194,9 @@ public class CareerCenterStaff extends User implements Serializable{
             default: System.out.println("Invalid choice.");
         }
     }
-
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Major
+     */
     private void applyMajorFilter(Scanner scanner) {
         System.out.print("Enter Major to filter by (e.g., Computer Science) or '0' to clear: ");
         String major = scanner.nextLine().toUpperCase();
@@ -186,7 +208,9 @@ public class CareerCenterStaff extends User implements Serializable{
             System.out.println("Added '" + major + "' to major filter.");
         }
     }
-
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Company
+     */
     private void applyCompanyFilter(Scanner scanner) {
         System.out.print("Enter Company Name to filter by or '0' to clear: ");
         String company = scanner.nextLine();
@@ -198,7 +222,9 @@ public class CareerCenterStaff extends User implements Serializable{
             System.out.println("Added '" + company + "' to company filter.");
         }
     }
-
+    /**
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Timeframe
+     */
     private void applyDateFilter(Scanner scanner, boolean isStartDate) {
         String prompt = isStartDate ? "Enter 'Opening From' Date (YYYY-MM-DD) or '0' to clear:" 
                                     : "Enter 'Closing Before' Date (YYYY-MM-DD) or '0' to clear:";
@@ -225,7 +251,11 @@ public class CareerCenterStaff extends User implements Serializable{
             System.out.println("Invalid date format. Please use YYYY-MM-DD.");
         }
     }
-    
+    /**
+     * Method to allow the registration of new CompanyRep
+     * @param representative The CompanyRep being created
+     * @return true after successful registration
+     */
     public boolean approveCompanyRegistration(CompanyRepresentative representative) {
         if (!representative.getAccountStatus().equals("Pending")) {
             System.out.println("Error: Can only approve 'Pending' registrations.");
@@ -235,7 +265,11 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Company representative " + representative.getName() + " from " + representative.getCompanyName() + " has been APPROVED.");
         return true;
     }
-
+    /**
+     * Method to deny the registration of new CompanyRep
+     * @param representative The CompanyRep application being rejected
+     * @return true after successful denial
+     */
     public boolean rejectCompanyRegistration(CompanyRepresentative representative) {
          if (!representative.getAccountStatus().equals("Pending")) {
             System.out.println("Error: Can only reject 'Pending' registrations.");
@@ -245,7 +279,11 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Company representative " + representative.getName() + " from " + representative.getCompanyName() + " has been REJECTED.");
         return true;
     }
-
+    /**
+     * Method to allow the registration of new Internshiplisting
+     * @param internship the opportunity being created
+     * @return true after successful registration
+     */
     public boolean approveInternship(InternshipOpportunity internship) {
         if (internship.getStatus() != InternshipStatus.PENDING) {
             System.out.println("Error: Can only approve 'Pending' internships.");
@@ -255,7 +293,11 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Internship '" + internship.getTitle() + "' has been APPROVED.");
         return true;
     }
-
+    /**
+     * Method to deny the registration of new Internshiplisting
+     * @param internship the opportunity being denied
+     * @return true after successful denial
+     */
     public boolean rejectInternship(InternshipOpportunity internship,String reason) {
         if (internship.getStatus() != InternshipStatus.PENDING) {
             System.out.println("Error: Can only reject 'Pending' internships.");
@@ -265,7 +307,10 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Internship '" + internship.getTitle() + "' has been REJECTED.");
         return true;
     }
-    
+    /**
+     * Method to View all Internship applications for approval/rejection
+     * @param allInternships This is the List of all internships taken stream
+     */
     public void managePendingInternships(List<InternshipOpportunity> allInternships, Scanner scanner) {
         boolean keepViewing = true;
 
@@ -339,7 +384,11 @@ public class CareerCenterStaff extends User implements Serializable{
             }
         } 
     }
-
+   /**
+    * Method to view Students Withdrawal requests for approved Internship Offers
+    * Can approve or deny withdrawal, with reasons provided for both withdraw offer and denial
+    * @param allInternships This is the List of all internships taken stream
+    */
     public void manageWithdrawalRequests(List<InternshipOpportunity> allInternships, Scanner scanner) {
         boolean keepViewing = true;
 
@@ -407,7 +456,10 @@ public class CareerCenterStaff extends User implements Serializable{
             }
         } 
     }
-
+    /**
+     * subMethod of {@link manageWithdrawalRequests} for approving the request
+     * @param application The specific application that is being withdrawn
+     */
     public boolean approveWithdrawal(Application application) {
         if (application.getStatus() != ApplicationStatus.WITHDRAWL_PENDING) {
             System.out.println("Error: Can only approve 'Withdrawal_Pending' applications.");
@@ -425,7 +477,10 @@ public class CareerCenterStaff extends User implements Serializable{
         }
         return true;
     }
-    
+    /**
+     * subMethod of {@link manageWithdrawalRequests} for rejecting the request
+     * @param application The specific application that is being withdrawn
+     */
     public boolean rejectWithdrawal(Application application) {
         if (application.getStatus() != ApplicationStatus.WITHDRAWL_PENDING) {
             System.out.println("Error: Can only reject 'Withdrawal_Pending' applications.");
@@ -436,7 +491,11 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Withdrawal request for " + application.getApplicant().getName() + " has been REJECTED.");
         return true;
     }
-
+    /**
+     * Method to display statistics of all Internship opportunities in the System
+     * Shows the amount of InternshipOps sorted by experience Level, Major, Company and Approval status 
+     * @param application The specific application that is being withdrawn
+     */
     public void generateInternshipReport(List<InternshipOpportunity> allInternships, Scanner scanner) {
         System.out.println("\n\n--- [ Internship Report ] ---");
 

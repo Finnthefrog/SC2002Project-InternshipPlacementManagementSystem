@@ -54,7 +54,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Career Center Staff approves the pending opportunity
+     * CareerCenter Staff approves the pending opportunity
      */
     public boolean approve(CareerCenterStaff staff) {
         if (this.status == InternshipStatus.PENDING) {
@@ -65,7 +65,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Career Center Staff rejects the opportunity
+     * CareerCenter Staff rejects the opportunity
      */
     public boolean reject(CareerCenterStaff staff, String reason) {
         if (this.status == InternshipStatus.PENDING) {
@@ -77,7 +77,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Toggle visibility of the opportunity
+     * Method to toggle visibility of the opportunity
      */
     public void toggleVisibility(CompanyRepresentative companyRep) {
         if (this.companyRepresentative.equals(companyRep)) {
@@ -94,7 +94,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Check if students can apply for this opportunity
+     * Method to Check if students can apply for this opportunity
      */
     public boolean canApply() {
         LocalDate today = LocalDate.now();
@@ -107,7 +107,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Check if opportunity is visible to students based on their profile
+     * Method to check if opportunity is visible to students based on their profile
      */
     public boolean isVisibleToStudent(Student student) {
         if (!isVisible || status != InternshipStatus.APPROVED) {
@@ -129,7 +129,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Add an application to this opportunity
+     * Method to an application to this opportunity
      */
     public boolean addApplication(Application application) {
         if (canApply()) {
@@ -140,7 +140,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Remove an application from this opportunity
+     * Method to remove an application from this opportunity
      */
     public boolean removeApplication(Application application) {
         return applications.remove(application);
@@ -259,7 +259,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Get detailed information for display
+     * Print detailed information of the Internship Listing for display
      */
     public String getDetailedInfo() {
         StringBuilder sb = new StringBuilder();

@@ -3,7 +3,11 @@ package internshipPlacementManagementSystem;
 import java.io.*;
 import java.time.LocalDate;
 
-
+/**
+ * Application class created by Student applying to an Internship opportunity
+ * Must be approved by CompanyRep and confirmed by Student to allow successful Internship allocation
+ * Can be withdrawn with CareerCentre staff approval at any time
+ */
 public class Application implements Serializable{
     private static int nextApplicationId = 1000;
     
