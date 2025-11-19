@@ -1,14 +1,10 @@
 package internshipPlacementManagementSystem;
 
 import java.io.Serializable;
-<<<<<<< HEAD
-
-=======
 /**
  * General Superclass for all Users in the Internship Placement system
  * handles features common to all users such as login/logout and password handling 
  */
->>>>>>> ziyanwork/origin
 public class User implements Serializable{
     private String userID; 
     private String name;
@@ -21,17 +17,6 @@ public class User implements Serializable{
         this.email = email;
         this.password = "password"; 
     }
-<<<<<<< HEAD
-
-    public boolean login(String passwordAttempt) {
-        return this.password.equals(passwordAttempt);
-    }
-
-    public void logout() {
-        System.out.println("User " + this.name + " logged out.");
-    }
-
-=======
 /**
  * Method to handle login and password verification 
  * @param passwordAttempt the input password
@@ -52,7 +37,6 @@ public class User implements Serializable{
  * @param newPassword The new password to be set
  * @return true if the password is successfully changed
  */
->>>>>>> ziyanwork/origin
     public boolean changePassword(String oldPassword, String newPassword) {
         if (this.password.equals(oldPassword)) {
             this.password = newPassword;
@@ -63,10 +47,7 @@ public class User implements Serializable{
             return false;
         }
     }
-<<<<<<< HEAD
-=======
     
->>>>>>> ziyanwork/origin
     public void setCompanyreid(int Companyrepid) {this.userID = "CR" + Companyrepid;}
     public String getUserID() { return this.userID; }
     public String getName() { return this.name; }

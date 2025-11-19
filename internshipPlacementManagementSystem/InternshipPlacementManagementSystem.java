@@ -6,9 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
-<<<<<<< HEAD
-
-=======
 /**
  * Main class for the InternshipManagementSystem 
  * Handles user authentication, menu navigation, registration,
@@ -16,7 +13,6 @@ import java.util.stream.Collectors;
  * based on user type
  * Provides the main and is responsible for loading, initialising, and persisting system state
  */
->>>>>>> ziyanwork/origin
 public class InternshipPlacementManagementSystem {
     
 	private SystemState state;
@@ -27,14 +23,10 @@ public class InternshipPlacementManagementSystem {
     private static final String STUDENT_DATA_FILE = "students.txt";
     private static final String STAFF_DATA_FILE = "staffs.txt";
     private static final String STATE_FILE_PATH = "data/system_state.dat";
-<<<<<<< HEAD
-    
-=======
     /**
      * Constructor for InternshipPlacementManagementSystem
      * Uses the existing System.dat systemState from previous Uses, or creates a new one if first use
      */
->>>>>>> ziyanwork/origin
     public InternshipPlacementManagementSystem() {
     	this.state = SystemState.loadOrCreate(STATE_FILE_PATH);
         this.applications = new ArrayList<>();
@@ -49,26 +41,17 @@ public class InternshipPlacementManagementSystem {
             System.out.println("Loaded data from " + STATE_FILE_PATH);
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Main Entry point for the Command-line-interface
      */
->>>>>>> ziyanwork/origin
     public static void main(String[] args) {
         InternshipPlacementManagementSystem system = new InternshipPlacementManagementSystem();
         system.run();
     }
-<<<<<<< HEAD
-    
-    public void run() {
-=======
     /**
      * Main system loop that shows login/User function screens
      */
     public void run() { 
->>>>>>> ziyanwork/origin
         System.out.println("=== Welcome to Internship Placement Management System ===");
         
         while (true) {
@@ -79,24 +62,15 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI Method to handle initial display before the User is logged in
      */
->>>>>>> ziyanwork/origin
     private void showMainMenu() {
         System.out.println("\n=== MAIN MENU ===");
         System.out.println("1. Login");
         System.out.println("2. Register Company Representative");
-<<<<<<< HEAD
-        System.out.println("3. Exit");
-        System.out.println("4. Clear All Data");
-=======
         System.out.println("3. Reset Forgotten Password");
         System.out.println("4. Exit");
->>>>>>> ziyanwork/origin
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
@@ -109,33 +83,20 @@ public class InternshipPlacementManagementSystem {
                 handleCompanyRepRegistration();
                 break;
             case 3:
-<<<<<<< HEAD
-=======
             	createPasswordResetRequest();
             	break;
             case 4:
->>>>>>> ziyanwork/origin
             	state.save(STATE_FILE_PATH);
                 System.out.println("Thank you for using the system. Goodbye!");
                 System.exit(0);
                 break;
-<<<<<<< HEAD
-            case 4:
-            	state.clearAllData();
-            	break;
-=======
->>>>>>> ziyanwork/origin
             default:
                 System.out.println("Invalid option. Please try again.");
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Conditional Method for Handling Login by user type 
      */
->>>>>>> ziyanwork/origin
     private void showUserMenu() {
         System.out.println("\n=== Welcome, " + currentUser.getName() + " ===");
         
@@ -147,13 +108,9 @@ public class InternshipPlacementManagementSystem {
             showCareerCenterStaffMenu((CareerCenterStaff) currentUser);
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method to handle Login into any user type
      */
->>>>>>> ziyanwork/origin
     private void handleLogin() {
         System.out.print("Enter Email: ");
         String email = scanner.nextLine().strip();
@@ -170,9 +127,6 @@ public class InternshipPlacementManagementSystem {
             System.out.println("Invalid credentials. Please try again.");
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * subMethod of {@link handleLogin} for Verifying Password-email pairs
      * Checks against existing users stored in system state 
@@ -180,7 +134,6 @@ public class InternshipPlacementManagementSystem {
      * @param password User-input password attempt
      * @return true if input corresponds to a stored user
      */
->>>>>>> ziyanwork/origin
     private User authenticateUser(String email, String password) {
         if (state.students.containsKey(email)) {
             Student student = state.students.get(email);
@@ -206,13 +159,6 @@ public class InternshipPlacementManagementSystem {
         
         return null;
     }
-<<<<<<< HEAD
-    
-    private void showStudentMenu(Student student) {
-        System.out.println("\n=== STUDENT MENU ===");
-        System.out.println("1. View & Apply Available Internship Opportunities");
-        System.out.println("2. View & Accepet or Withdrawl My Applications");
-=======
     /**
      * UI method for use of Student user
      */
@@ -220,7 +166,6 @@ public class InternshipPlacementManagementSystem {
         System.out.println("\n=== STUDENT MENU ===");
         System.out.println("1. View & Apply Available Internship Opportunities");
         System.out.println("2. View & Accept or Withdraw My Applications");
->>>>>>> ziyanwork/origin
         System.out.println("3. Change Password");
         System.out.println("4. Logout");
         System.out.print("Select an option: ");
@@ -245,13 +190,9 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method after login for use of CompanyRep
      */
->>>>>>> ziyanwork/origin
     private void showCompanyRepresentativeMenu(CompanyRepresentative companyRep) {
         System.out.println("\n=== COMPANY REPRESENTATIVE MENU ===");
         System.out.println("1. Create Internship Opportunity");
@@ -288,14 +229,10 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method for CompanyRep to create new internship opportunity listing
      * @param companyRep Current companyRep user login 
      */
->>>>>>> ziyanwork/origin
     private void createInternshipOpportunity(CompanyRepresentative companyRep) {
         long existingOpportunities = state.internshipOpportunities.stream()
                 .filter(opp -> opp.getCompanyRepresentative().equals(companyRep))
@@ -344,11 +281,7 @@ public class InternshipPlacementManagementSystem {
         }
         
         System.out.print("Enter number of slots (max 10): ");
-<<<<<<< HEAD
         int slots = getIntInput();
-=======
-        int slots = Math.min(getIntInput(), 10);
->>>>>>> ziyanwork/origin
         
         InternshipOpportunity newInternship;
         newInternship = companyRep.createInternship(title, description, level, preferredMajor, 
@@ -358,13 +291,9 @@ public class InternshipPlacementManagementSystem {
         System.out.println("Opportunity ID: " + newInternship.getOpportunityId());
         System.out.println("Status: PENDING (awaiting Career Center approval)");
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method after Login of CareerCentre Staff
      */
->>>>>>> ziyanwork/origin
     private void showCareerCenterStaffMenu(CareerCenterStaff staff) {
         System.out.println("\n=== CAREER CENTER STAFF MENU ===");
         System.out.println("1. Manage Company Representatives");
@@ -373,12 +302,8 @@ public class InternshipPlacementManagementSystem {
         System.out.println("4. Generate Internship Report"); // <-- MODIFIED
         System.out.println("5. Handle Withdrawal Requests");
         System.out.println("6. Change Password");
-<<<<<<< HEAD
-        System.out.println("7. Logout");
-=======
         System.out.println("7. Handle Password reset Requests");
         System.out.println("8. Logout");
->>>>>>> ziyanwork/origin
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
@@ -402,14 +327,10 @@ public class InternshipPlacementManagementSystem {
             case 6:
             	changePassword(staff);
                 break;
-<<<<<<< HEAD
-            case 7:
-=======
              case 7:
                  handlePasswordResetRequests((CareerCenterStaff) currentUser);
                  break;
             case 8:
->>>>>>> ziyanwork/origin
             	staff.logout();
             	this.currentUser = null;
             	return;
@@ -417,9 +338,6 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method for CareerCentre staff to handle forgotten password reset requests
      * Will reset to the default "password"
@@ -481,7 +399,6 @@ public class InternshipPlacementManagementSystem {
      * UI Method for CareerCenter staff to approve pending companyRep registrations
      * @param staff the currently logged in CareerCentre member
      */
->>>>>>> ziyanwork/origin
     private void manageCompanyRepresentatives(CareerCenterStaff staff) {
         List<CompanyRepresentative> pendingReps = state.reps.values().stream()
                 .filter(rep -> !rep.getAccountStatus().equals("Approve") && rep.getAccountStatus().equals("Pending"))
@@ -529,14 +446,10 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * UI method for registering a New companyRep
      * Default password is 'password'
      */
->>>>>>> ziyanwork/origin
     private void handleCompanyRepRegistration() {
         System.out.println("\n=== Company Representative Registration ===");
         
@@ -615,23 +528,12 @@ public class InternshipPlacementManagementSystem {
         System.out.println("Your account is pending approval from Career Center Staff.");
         System.out.println("You will be able to login once your account is approved.");
     }
-<<<<<<< HEAD
-    
-=======
     // test method
->>>>>>> ziyanwork/origin
     private void addSampleStudents() {
         state.students.put("U2345678B", new Student("U2345678B", "Jane Smith", "1234@gmail.com", 2, "EEE"));
         state.students.put("1234", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
         state.students.put("12345", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
     }
-<<<<<<< HEAD
-    
-    private boolean isValidEmail(String email) {
-        return email.contains("@") && email.contains(".");
-    }
-    
-=======
     /**
      * Helper method to validate Email for login/registration
      * @param email to validate
@@ -644,7 +546,6 @@ public class InternshipPlacementManagementSystem {
      *Helper Method to get valid Integer Input
      * @return Integer input 
      */
->>>>>>> ziyanwork/origin
     private int getIntInput() {
         while (true) {
             try {
@@ -655,15 +556,11 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Helper Method for handling UI for date input and valitation
      * @param prompt System Output to prompt date input
      * @return Date object if valid date input
      */
->>>>>>> ziyanwork/origin
     private LocalDate getDateInput(String prompt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         while (true) {
@@ -676,14 +573,10 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Method to Handle UI for any User changing password
      * @param user logged in User changing password
      */
->>>>>>> ziyanwork/origin
     private void changePassword(User user) {
         System.out.print("Enter current password: ");
         String currentPassword = scanner.nextLine();
@@ -712,13 +605,9 @@ public class InternshipPlacementManagementSystem {
         loadStaffsFromFile();
         System.out.println("Data loaded. " + (state.students.size()+ state.staff.size())+ " students in the system.");
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Method to load Student records from .TXT.
      */
->>>>>>> ziyanwork/origin
     private void loadStudentsFromFile() {
         InputStream is = getClass().getResourceAsStream(STUDENT_DATA_FILE);
 
@@ -751,13 +640,9 @@ public class InternshipPlacementManagementSystem {
             addSampleStudents();
         }
     }
-<<<<<<< HEAD
-    
-=======
     /**
      * Method to load CareerCentre staff records from .TXT.
      */
->>>>>>> ziyanwork/origin
     private void loadStaffsFromFile() {
         InputStream is = getClass().getResourceAsStream(STAFF_DATA_FILE);
 
