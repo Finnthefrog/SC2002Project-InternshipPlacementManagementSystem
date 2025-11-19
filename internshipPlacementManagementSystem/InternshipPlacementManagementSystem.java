@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 /**
  * Main class for the InternshipManagementSystem 
- * Handles user authentication, menu navigation, registration,
+ * ,Handles user authentication, menu navigation, registration,
  * file loading, password management, and dispatches different menus and options
  * based on user type
  * Provides the main and is responsible for loading, initialising, and persisting system state

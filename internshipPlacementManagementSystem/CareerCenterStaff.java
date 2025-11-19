@@ -478,7 +478,7 @@ public class CareerCenterStaff extends User implements Serializable{
 /**
      * Method to display statistics of all Internship opportunities in the System
      * Shows the amount of InternshipOps sorted by experience Level, Major, Company and Approval status 
-     * @param application The specific application that is being withdrawn
+     * @param allInternships The stream of Internship Opportunities
      */
     public void generateInternshipReport(List<InternshipOpportunity> allInternships, Scanner scanner) {
         System.out.println("\n\n--- [ Internship Report ] ---");
