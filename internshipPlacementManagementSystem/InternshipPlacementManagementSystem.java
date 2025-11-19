@@ -6,13 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
-/**
- * Main class for the InternshipManagementSystem 
- * Handles user authentication, menu navigation, registration,
- * file loading, password management, and dispatches different menus and options
- * based on user type
- * Provides the main and is responsible for loading, initialising, and persisting system state
- */
+
 public class InternshipPlacementManagementSystem {
     
 	private SystemState state;
@@ -23,10 +17,7 @@ public class InternshipPlacementManagementSystem {
     private static final String STUDENT_DATA_FILE = "students.txt";
     private static final String STAFF_DATA_FILE = "staffs.txt";
     private static final String STATE_FILE_PATH = "data/system_state.dat";
-    /**
-     * Constructor for InternshipPlacementManagementSystem
-     * Uses the existing System.dat systemState from previous Uses, or creates a new one if first use
-     */
+    
     public InternshipPlacementManagementSystem() {
     	this.state = SystemState.loadOrCreate(STATE_FILE_PATH);
         this.applications = new ArrayList<>();
@@ -41,17 +32,13 @@ public class InternshipPlacementManagementSystem {
             System.out.println("Loaded data from " + STATE_FILE_PATH);
         }
     }
-    /**
-     * Main Entry point for the Command-line-interface
-     */
+    
     public static void main(String[] args) {
         InternshipPlacementManagementSystem system = new InternshipPlacementManagementSystem();
         system.run();
     }
-    /**
-     * Main system loop that shows login/User function screens
-     */
-    public void run() { 
+    
+    public void run() {
         System.out.println("=== Welcome to Internship Placement Management System ===");
         
         while (true) {
@@ -62,15 +49,13 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-    /**
-     * UI Method to handle initial display before the User is logged in
-     */
+    
     private void showMainMenu() {
         System.out.println("\n=== MAIN MENU ===");
         System.out.println("1. Login");
         System.out.println("2. Register Company Representative");
-        System.out.println("3. Reset Forgotten Password");
-        System.out.println("4. Exit");
+        System.out.println("3. Exit");
+        System.out.println("4. Clear All Data");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
@@ -83,20 +68,18 @@ public class InternshipPlacementManagementSystem {
                 handleCompanyRepRegistration();
                 break;
             case 3:
-            	createPasswordResetRequest();
-            	break;
-            case 4:
             	state.save(STATE_FILE_PATH);
                 System.out.println("Thank you for using the system. Goodbye!");
                 System.exit(0);
                 break;
+            case 4:
+            	state.clearAllData();
+            	break;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
     }
-    /**
-     * Conditional Method for Handling Login by user type 
-     */
+    
     private void showUserMenu() {
         System.out.println("\n=== Welcome, " + currentUser.getName() + " ===");
         
@@ -108,9 +91,7 @@ public class InternshipPlacementManagementSystem {
             showCareerCenterStaffMenu((CareerCenterStaff) currentUser);
         }
     }
-    /**
-     * UI method to handle Login into any user type
-     */
+    
     private void handleLogin() {
         System.out.print("Enter Email: ");
         String email = scanner.nextLine().strip();
@@ -127,13 +108,7 @@ public class InternshipPlacementManagementSystem {
             System.out.println("Invalid credentials. Please try again.");
         }
     }
-    /**
-     * subMethod of {@link handleLogin} for Verifying Password-email pairs
-     * Checks against existing users stored in system state 
-     * @param email User-input email attempt
-     * @param password User-input password attempt
-     * @return true if input corresponds to a stored user
-     */
+    
     private User authenticateUser(String email, String password) {
         if (state.students.containsKey(email)) {
             Student student = state.students.get(email);
@@ -159,13 +134,11 @@ public class InternshipPlacementManagementSystem {
         
         return null;
     }
-    /**
-     * UI method for use of Student user
-     */
+    
     private void showStudentMenu(Student student) {
         System.out.println("\n=== STUDENT MENU ===");
         System.out.println("1. View & Apply Available Internship Opportunities");
-        System.out.println("2. View & Accept or Withdraw My Applications");
+        System.out.println("2. View & Accepet or Withdrawl My Applications");
         System.out.println("3. Change Password");
         System.out.println("4. Logout");
         System.out.print("Select an option: ");
@@ -190,9 +163,7 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-    /**
-     * UI method after login for use of CompanyRep
-     */
+    
     private void showCompanyRepresentativeMenu(CompanyRepresentative companyRep) {
         System.out.println("\n=== COMPANY REPRESENTATIVE MENU ===");
         System.out.println("1. Create Internship Opportunity");
@@ -210,7 +181,7 @@ public class InternshipPlacementManagementSystem {
                 createInternshipOpportunity(companyRep);
                 break;
             case 2:
-                companyRep.viewCreatedInternships(scanner);
+                companyRep.viewCreatedInternships(scanner,state.internshipOpportunities);
                 break;
             case 3:
             	companyRep.manageAllApplications(scanner);
@@ -229,10 +200,7 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-    /**
-     * UI method for CompanyRep to create new internship opportunity listing
-     * @param companyRep Current companyRep user login 
-     */
+    
     private void createInternshipOpportunity(CompanyRepresentative companyRep) {
         long existingOpportunities = state.internshipOpportunities.stream()
                 .filter(opp -> opp.getCompanyRepresentative().equals(companyRep))
@@ -281,7 +249,7 @@ public class InternshipPlacementManagementSystem {
         }
         
         System.out.print("Enter number of slots (max 10): ");
-        int slots = Math.min(getIntInput(), 10);
+        int slots = getIntInput();
         
         InternshipOpportunity newInternship;
         newInternship = companyRep.createInternship(title, description, level, preferredMajor, 
@@ -291,9 +259,7 @@ public class InternshipPlacementManagementSystem {
         System.out.println("Opportunity ID: " + newInternship.getOpportunityId());
         System.out.println("Status: PENDING (awaiting Career Center approval)");
     }
-    /**
-     * UI method after Login of CareerCentre Staff
-     */
+    
     private void showCareerCenterStaffMenu(CareerCenterStaff staff) {
         System.out.println("\n=== CAREER CENTER STAFF MENU ===");
         System.out.println("1. Manage Company Representatives");
@@ -302,8 +268,7 @@ public class InternshipPlacementManagementSystem {
         System.out.println("4. Generate Internship Report"); // <-- MODIFIED
         System.out.println("5. Handle Withdrawal Requests");
         System.out.println("6. Change Password");
-        System.out.println("7. Handle Password reset Requests");
-        System.out.println("8. Logout");
+        System.out.println("7. Logout");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
@@ -327,10 +292,7 @@ public class InternshipPlacementManagementSystem {
             case 6:
             	changePassword(staff);
                 break;
-             case 7:
-                 handlePasswordResetRequests((CareerCenterStaff) currentUser);
-                 break;
-            case 8:
+            case 7:
             	staff.logout();
             	this.currentUser = null;
             	return;
@@ -338,67 +300,7 @@ public class InternshipPlacementManagementSystem {
                 System.out.println("Invalid option. Please try again.");
         }
     }
-    /**
-     * UI method for CareerCentre staff to handle forgotten password reset requests
-     * Will reset to the default "password"
-     */
-    private void handlePasswordResetRequests(CareerCenterStaff staff) {
-        List<PasswordResetRequest> pending = state.passwordResetRequests.stream()
-            .filter(r -> !r.isHandled())
-            .collect(Collectors.toList());
-        if (pending.isEmpty()) {
-            System.out.println("No pending password reset requests.");
-            return;
-        }
-        System.out.println("\n=== Pending Password Reset Requests ===");
-        for (int i = 0; i < pending.size(); i++) {
-            System.out.println((i + 1) + ". " + pending.get(i).getEmail());
-        }
-        System.out.print("Select a request to handle (or 0 to cancel): ");
-        int choice = getIntInput();
-        if (choice <= 0 || choice > pending.size()) return;
-
-        PasswordResetRequest req = pending.get(choice - 1);
-        String email = req.getEmail();
-        User user = null;
-
-        if (state.students.containsKey(email)) {
-            user = state.students.get(email);
-        } else if (state.reps.containsKey(email)) {
-            user = state.reps.get(email);
-        } else if (state.staff.containsKey(email)) {
-            user = state.staff.get(email);
-        }
-
-        if (user != null) {
-            user.changePassword(user.getPassword(), "password"); // Reset to default password
-            req.setHandled(true);
-            System.out.println("Password reset successfully. Please notify the user securely.");
-            state.save(STATE_FILE_PATH);
-        } else {
-            System.out.println("User not found!");
-        }
-    }
-    /**
-     * UI method for any User to request a CareerCentre password request
-     * Will reset to the default "password"
-     */
-    private void createPasswordResetRequest() {
-        System.out.print("Enter your registered email: ");
-        String email = scanner.nextLine().strip();
-        if (!state.students.containsKey(email) && !state.staff.containsKey(email) && !state.reps.containsKey(email)) {
-            System.out.println("Email not found in system. Please try again.");
-            return;
-        }
-        state.passwordResetRequests.add(new PasswordResetRequest(email));
-        state.save(STATE_FILE_PATH); // persist immediately
-        System.out.println("Your password reset request has been submitted. Career Center Staff will review your password reset request.");
-        }
     
-    /**
-     * UI Method for CareerCenter staff to approve pending companyRep registrations
-     * @param staff the currently logged in CareerCentre member
-     */
     private void manageCompanyRepresentatives(CareerCenterStaff staff) {
         List<CompanyRepresentative> pendingReps = state.reps.values().stream()
                 .filter(rep -> !rep.getAccountStatus().equals("Approve") && rep.getAccountStatus().equals("Pending"))
@@ -446,10 +348,7 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-    /**
-     * UI method for registering a New companyRep
-     * Default password is 'password'
-     */
+    
     private void handleCompanyRepRegistration() {
         System.out.println("\n=== Company Representative Registration ===");
         
@@ -528,24 +427,17 @@ public class InternshipPlacementManagementSystem {
         System.out.println("Your account is pending approval from Career Center Staff.");
         System.out.println("You will be able to login once your account is approved.");
     }
-    // test method
+    
     private void addSampleStudents() {
         state.students.put("U2345678B", new Student("U2345678B", "Jane Smith", "1234@gmail.com", 2, "EEE"));
         state.students.put("1234", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
         state.students.put("12345", new Student("U3456789C", "Bob Johnson", "12345@gmail.com", 4, "MAE"));
     }
-    /**
-     * Helper method to validate Email for login/registration
-     * @param email to validate
-     * @return True if valid format
-     */
+    
     private boolean isValidEmail(String email) {
         return email.contains("@") && email.contains(".");
     }
-    /**
-     *Helper Method to get valid Integer Input
-     * @return Integer input 
-     */
+    
     private int getIntInput() {
         while (true) {
             try {
@@ -556,11 +448,7 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-    /**
-     * Helper Method for handling UI for date input and valitation
-     * @param prompt System Output to prompt date input
-     * @return Date object if valid date input
-     */
+    
     private LocalDate getDateInput(String prompt) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         while (true) {
@@ -573,10 +461,7 @@ public class InternshipPlacementManagementSystem {
             }
         }
     }
-    /**
-     * Method to Handle UI for any User changing password
-     * @param user logged in User changing password
-     */
+    
     private void changePassword(User user) {
         System.out.print("Enter current password: ");
         String currentPassword = scanner.nextLine();
@@ -605,9 +490,7 @@ public class InternshipPlacementManagementSystem {
         loadStaffsFromFile();
         System.out.println("Data loaded. " + (state.students.size()+ state.staff.size())+ " students in the system.");
     }
-    /**
-     * Method to load Student records from .TXT.
-     */
+    
     private void loadStudentsFromFile() {
         InputStream is = getClass().getResourceAsStream(STUDENT_DATA_FILE);
 
@@ -640,9 +523,7 @@ public class InternshipPlacementManagementSystem {
             addSampleStudents();
         }
     }
-    /**
-     * Method to load CareerCentre staff records from .TXT.
-     */
+    
     private void loadStaffsFromFile() {
         InputStream is = getClass().getResourceAsStream(STAFF_DATA_FILE);
 

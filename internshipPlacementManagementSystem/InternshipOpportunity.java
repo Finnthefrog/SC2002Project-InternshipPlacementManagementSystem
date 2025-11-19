@@ -46,7 +46,7 @@ public class InternshipOpportunity implements Serializable{
         this.status = InternshipStatus.PENDING;
         this.companyName = companyRep.getCompanyName();
         this.companyRepresentative = companyRep;
-        this.totalSlots = Math.min(totalSlots, 10); // Max 10 slots as per requirements
+        this.totalSlots = totalSlots; // Max 10 slots as per requirements
         this.confirmedSlots = 0;
         this.isVisible = true; // Default to visible
         this.creationDate = LocalDate.now();
@@ -54,7 +54,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * CareerCenter Staff approves the pending opportunity
+     * Career Center Staff approves the pending opportunity
      */
     public boolean approve(CareerCenterStaff staff) {
         if (this.status == InternshipStatus.PENDING) {
@@ -65,7 +65,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * CareerCenter Staff rejects the opportunity
+     * Career Center Staff rejects the opportunity
      */
     public boolean reject(CareerCenterStaff staff, String reason) {
         if (this.status == InternshipStatus.PENDING) {
@@ -77,7 +77,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Method to toggle visibility of the opportunity
+     * Toggle visibility of the opportunity
      */
     public void toggleVisibility(CompanyRepresentative companyRep) {
         if (this.companyRepresentative.equals(companyRep)) {
@@ -94,7 +94,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Method to Check if students can apply for this opportunity
+     * Check if students can apply for this opportunity
      */
     public boolean canApply() {
         LocalDate today = LocalDate.now();
@@ -107,7 +107,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Method to check if opportunity is visible to students based on their profile
+     * Check if opportunity is visible to students based on their profile
      */
     public boolean isVisibleToStudent(Student student) {
         if (!isVisible || status != InternshipStatus.APPROVED) {
@@ -129,7 +129,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Method to an application to this opportunity
+     * Add an application to this opportunity
      */
     public boolean addApplication(Application application) {
         if (canApply()) {
@@ -140,7 +140,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Method to remove an application from this opportunity
+     * Remove an application from this opportunity
      */
     public boolean removeApplication(Application application) {
         return applications.remove(application);
@@ -210,7 +210,7 @@ public class InternshipOpportunity implements Serializable{
         this.preferredMajor = preferredMajor;
         this.applicationOpeningDate = openingDate;
         this.applicationClosingDate = closingDate;
-        this.totalSlots = Math.min(totalSlots, 10);
+        this.totalSlots = totalSlots;
         return true;
     }
     
@@ -249,6 +249,19 @@ public class InternshipOpportunity implements Serializable{
     
     public List<Application> getApplications() { return new ArrayList<>(applications); }
     
+    public void setTitle(String title) {this.title = title;}
+    
+    public void setDescription(String description) {this.description = description;}
+    
+    public void setLevel(InternshipLevel level) {this.level = level;}
+    
+    public void setMajor(String major) {this.preferredMajor = major;}
+    
+    public void setOpeningDate(LocalDate openingdate) {this.applicationOpeningDate = openingdate;}
+    
+    public void setClosingDate(LocalDate closingdate) {this.applicationClosingDate = closingdate;}
+    
+    public void setSlots(int slot) {this.totalSlots = slot;}
     @Override
     public String toString() {
         return String.format("ID: %d | %s | Company: %s | Level: %s | Major: %s | " +
@@ -259,7 +272,7 @@ public class InternshipOpportunity implements Serializable{
     }
     
     /**
-     * Print detailed information of the Internship Listing for display
+     * Get detailed information for display
      */
     public String getDetailedInfo() {
         StringBuilder sb = new StringBuilder();

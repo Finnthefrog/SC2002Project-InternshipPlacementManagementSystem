@@ -3,11 +3,7 @@ package internshipPlacementManagementSystem;
 import java.io.*;
 import java.time.LocalDate;
 
-/**
- * Application class created by Student applying to an Internship opportunity
- * Must be approved by CompanyRep and confirmed by Student to allow successful Internship allocation
- * Can be withdrawn with CareerCentre staff approval at any time
- */
+
 public class Application implements Serializable{
     private static int nextApplicationId = 1000;
     
@@ -78,6 +74,7 @@ public class Application implements Serializable{
             this.statusUpdateDate = LocalDate.now();
             // Update opportunity slot count	
             opportunity.confirmPlacement();
+            this.status = ApplicationStatus.ACCEPTED;
             return true;
         }
         return false;
@@ -88,7 +85,7 @@ public class Application implements Serializable{
      */
     public boolean requestWithdrawal(String reason) {
         if (this.status == ApplicationStatus.PENDING || 
-            (this.status == ApplicationStatus.SUCCESSFUL)) {
+            (this.status == ApplicationStatus.SUCCESSFUL)|| (this.status == ApplicationStatus.ACCEPTED)) {
             this.withdrawalReason = reason;
             this.status = ApplicationStatus.WITHDRAWL_PENDING;
             System.out.println("Successfully Submitting");
