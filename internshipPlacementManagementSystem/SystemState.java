@@ -39,12 +39,7 @@ public class SystemState implements Serializable {
         File f = new File(path);
         if (!f.exists()) return new SystemState();
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f))) {
-        	 SystemState loaded = (SystemState) ois.readObject();
-             // Patch for new fields after deserialization for compatibility
-             if (loaded.passwordResetRequests == null)
-                 loaded.passwordResetRequests = new ArrayList<>();
-             // (Add similar patches for other future fields, if any)
-             return loaded;
+            return (SystemState) ois.readObject();
         } catch (Exception e) {
             System.out.println("[Warn] Failed to load state: " + e.getMessage());
             return new SystemState();
@@ -63,6 +58,28 @@ public class SystemState implements Serializable {
             System.out.println("[Warn] Failed to save state: " + e.getMessage());
         }
     }
+    /**
+     * Method to reset the SystemState
+     */
+    public void clearAllData() {
+        users.clear();
+        students.clear();
+        reps.clear();
+        staff.clear();
+        internshipOpportunities.clear();
+        applications.clear();
+        userFilters.clear();
+        
+        curOpportunityId = 1;
+        curApplicationId = 1;
+        curCompanyrepId = 1;
+        nextIntSeq = 1;
+        nextAppSeq = 1;
+        nextWrSeq = 1;
+
+        System.out.println("All data has been cleared.");
+    }
+
     public int getCurOpID() {return this.curOpportunityId++;}
     public int getComapnyrepid() {return this.curCompanyrepId++;}
     public int getCurappid() {return this.curApplicationId++;}

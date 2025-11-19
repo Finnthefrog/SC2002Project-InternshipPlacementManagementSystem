@@ -20,14 +20,7 @@ public class CareerCenterStaff extends User implements Serializable{
     private String staffDepartment;
     private FilterSettings filterSettings; 
     private String role;
-    /**
-     * Constructor for the CareerCenterStaff object
-     * @param userID Designated Identification Number of this staff member
-     * @param name The name of this given staff folder
-     * @param email Staff email for login 
-     * @param role Position of the staff the Career centre 
-     * @param staffDepartment The department of the Career centre system of this user
-     */
+    
     public CareerCenterStaff(String userID,String name,String email ,String role, String staffDepartment) {
     	super(userID, name, email); 
         this.staffDepartment = staffDepartment;
@@ -97,14 +90,15 @@ public class CareerCenterStaff extends User implements Serializable{
                 List<InternshipOpportunity> pageItems = filteredList.subList(startIndex, endIndex);
                 for (int i = 0; i < pageItems.size(); i++) {
                     InternshipOpportunity opp = pageItems.get(i);
-                    System.out.printf("%d. | id: %s | %s (%s) | Level: %s | Major: %s | Slots: %d | Open: %s | Close: %s | App Status: %s\n",
+                    System.out.printf("%d. | id: %s | %s (%s) | Description: %s | Level: %s | Major: %s | Slots: %d | Open: %s | Close: %s | Internship Status: %s\n",
                     		(startIndex + i + 1),
                     		opp.getOpportunityId(),
                     		opp.getTitle(),
                     		opp.getCompanyName(),
+                    		opp.getDescription(),
                     		opp.getLevel(),
                     		opp.getPreferredMajor(),
-                            opp.getTotalSlots(),
+                            opp.getTotalSlots()- opp.getConfirmedSlots(),
                             opp.getApplicationOpeningDate(), 
                             opp.getApplicationClosingDate(), 
                             opp.getStatus()); 
@@ -181,8 +175,8 @@ public class CareerCenterStaff extends User implements Serializable{
         }
     }
 /**
- * subMethod of {@link applyOpportunityFilter} that handles filtering by Level
- */
+     * subMethod of {@link applyOpportunityFilter} that handles filtering by Level
+     */
     private void applyLevelFilter(Scanner scanner) {
         System.out.println("Add filter by Level (1: Basic, 2: Intermediate, 3: Advanced, 0: Clear Level Filter):");
         String choice = scanner.nextLine();
@@ -194,7 +188,7 @@ public class CareerCenterStaff extends User implements Serializable{
             default: System.out.println("Invalid choice.");
         }
     }
-    /**
+/**
      * subMethod of {@link applyOpportunityFilter} that handles filtering by Major
      */
     private void applyMajorFilter(Scanner scanner) {
@@ -208,9 +202,7 @@ public class CareerCenterStaff extends User implements Serializable{
             System.out.println("Added '" + major + "' to major filter.");
         }
     }
-    /**
-     * subMethod of {@link applyOpportunityFilter} that handles filtering by Company
-     */
+
     private void applyCompanyFilter(Scanner scanner) {
         System.out.print("Enter Company Name to filter by or '0' to clear: ");
         String company = scanner.nextLine();
@@ -222,7 +214,7 @@ public class CareerCenterStaff extends User implements Serializable{
             System.out.println("Added '" + company + "' to company filter.");
         }
     }
-    /**
+/**
      * subMethod of {@link applyOpportunityFilter} that handles filtering by Timeframe
      */
     private void applyDateFilter(Scanner scanner, boolean isStartDate) {
@@ -265,11 +257,7 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Company representative " + representative.getName() + " from " + representative.getCompanyName() + " has been APPROVED.");
         return true;
     }
-    /**
-     * Method to deny the registration of new CompanyRep
-     * @param representative The CompanyRep application being rejected
-     * @return true after successful denial
-     */
+
     public boolean rejectCompanyRegistration(CompanyRepresentative representative) {
          if (!representative.getAccountStatus().equals("Pending")) {
             System.out.println("Error: Can only reject 'Pending' registrations.");
@@ -279,7 +267,7 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Company representative " + representative.getName() + " from " + representative.getCompanyName() + " has been REJECTED.");
         return true;
     }
-    /**
+ /**
      * Method to allow the registration of new Internshiplisting
      * @param internship the opportunity being created
      * @return true after successful registration
@@ -293,11 +281,7 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Internship '" + internship.getTitle() + "' has been APPROVED.");
         return true;
     }
-    /**
-     * Method to deny the registration of new Internshiplisting
-     * @param internship the opportunity being denied
-     * @return true after successful denial
-     */
+
     public boolean rejectInternship(InternshipOpportunity internship,String reason) {
         if (internship.getStatus() != InternshipStatus.PENDING) {
             System.out.println("Error: Can only reject 'Pending' internships.");
@@ -330,7 +314,7 @@ public class CareerCenterStaff extends User implements Serializable{
 
             for (int i = 0; i < pendingInternships.size(); i++) {
                 InternshipOpportunity opp = pendingInternships.get(i);
-                System.out.printf("%d. | id: %s | Visible: %s | %s (%s) | Level: %s | Major: %s | Slots: %d | Open: %s | Close: %s | App Status: %s\n",
+                System.out.printf("%d. | id: %s | Visible: %s | %s (%s) | Level: %s | Major: %s | Slots: %d | Open: %s | Close: %s | Internship Status: %s\n",
                 		(i + 1),
                 		opp.getOpportunityId(),
                 		opp.isVisible(),
@@ -338,7 +322,7 @@ public class CareerCenterStaff extends User implements Serializable{
                 		opp.getCompanyName(),
                 		opp.getLevel(),
                 		opp.getPreferredMajor(),
-                        opp.getTotalSlots(),
+                        opp.getTotalSlots() - opp.getConfirmedSlots(),
                         opp.getApplicationOpeningDate(), 
                         opp.getApplicationClosingDate(), 
                         opp.getStatus()); 
@@ -384,7 +368,7 @@ public class CareerCenterStaff extends User implements Serializable{
             }
         } 
     }
-   /**
+/**
     * Method to view Students Withdrawal requests for approved Internship Offers
     * Can approve or deny withdrawal, with reasons provided for both withdraw offer and denial
     * @param allInternships This is the List of all internships taken stream
@@ -456,7 +440,7 @@ public class CareerCenterStaff extends User implements Serializable{
             }
         } 
     }
-    /**
+/**
      * subMethod of {@link manageWithdrawalRequests} for approving the request
      * @param application The specific application that is being withdrawn
      */
@@ -491,7 +475,7 @@ public class CareerCenterStaff extends User implements Serializable{
         System.out.println("Withdrawal request for " + application.getApplicant().getName() + " has been REJECTED.");
         return true;
     }
-    /**
+/**
      * Method to display statistics of all Internship opportunities in the System
      * Shows the amount of InternshipOps sorted by experience Level, Major, Company and Approval status 
      * @param application The specific application that is being withdrawn
@@ -504,6 +488,7 @@ public class CareerCenterStaff extends User implements Serializable{
         int advancedCount = 0;
         Map<String, Integer> majorCounts = new HashMap<>();
         Map<InternshipStatus, Integer> statusCounts = new HashMap<>();
+        Map<String, Integer> companyCounts = new HashMap<>();
 
         for (InternshipOpportunity internship : allInternships) {
 
@@ -518,6 +503,9 @@ public class CareerCenterStaff extends User implements Serializable{
             
             InternshipStatus status = internship.getStatus();
             statusCounts.put(status, statusCounts.getOrDefault(status, 0) + 1);
+
+            String companyName = internship.getCompanyName();
+            companyCounts.put(companyName, companyCounts.getOrDefault(companyName,0)+1);
         } 
         
         System.out.println("---------------------------------");
@@ -548,7 +536,14 @@ public class CareerCenterStaff extends User implements Serializable{
                 System.out.println("  " + entry.getKey() + ": " + entry.getValue());
             }
         }
-
+        System.out.println("\nBy Company:");
+        if (companyCounts.isEmpty()) {
+        	System.out.println("No internships in the system.");
+        } else {
+            for (Map.Entry<String, Integer> entry : companyCounts.entrySet()) {
+                System.out.println("  " + entry.getKey() + ": " + entry.getValue());
+            }
+        }
         System.out.println("--- [ End of Report ] ---\n");
         System.out.println("Press Enter to return to the menu...");
         scanner.nextLine(); 

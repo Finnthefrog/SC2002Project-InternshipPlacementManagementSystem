@@ -70,7 +70,8 @@ public class InternshipPlacementManagementSystem {
         System.out.println("1. Login");
         System.out.println("2. Register Company Representative");
         System.out.println("3. Reset Forgotten Password");
-        System.out.println("4. Exit");
+        System.out.println("4. Clear system");
+        System.out.println("5. Exit");
         System.out.print("Select an option: ");
         
         int choice = getIntInput();
@@ -86,6 +87,9 @@ public class InternshipPlacementManagementSystem {
             	createPasswordResetRequest();
             	break;
             case 4:
+            	state.clearAllData();
+            	break;
+            case 5:
             	state.save(STATE_FILE_PATH);
                 System.out.println("Thank you for using the system. Goodbye!");
                 System.exit(0);
@@ -210,7 +214,7 @@ public class InternshipPlacementManagementSystem {
                 createInternshipOpportunity(companyRep);
                 break;
             case 2:
-                companyRep.viewCreatedInternships(scanner);
+            	companyRep.viewCreatedInternships(scanner,state.internshipOpportunities);
                 break;
             case 3:
             	companyRep.manageAllApplications(scanner);

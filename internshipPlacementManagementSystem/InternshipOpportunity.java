@@ -249,6 +249,20 @@ public class InternshipOpportunity implements Serializable{
     
     public List<Application> getApplications() { return new ArrayList<>(applications); }
     
+    public void setTitle(String title) {this.title = title;}
+    
+    public void setDescription(String description) {this.description = description;}
+    
+    public void setLevel(InternshipLevel level) {this.level = level;}
+    
+    public void setMajor(String major) {this.preferredMajor = major;}
+    
+    public void setOpeningDate(LocalDate openingdate) {this.applicationOpeningDate = openingdate;}
+    
+    public void setClosingDate(LocalDate closingdate) {this.applicationClosingDate = closingdate;}
+    
+    public void setSlots(int slot) {this.totalSlots = slot;}
+    
     @Override
     public String toString() {
         return String.format("ID: %d | %s | Company: %s | Level: %s | Major: %s | " +
@@ -280,4 +294,5 @@ public class InternshipOpportunity implements Serializable{
         
         return sb.toString();
     }
+    
 }
